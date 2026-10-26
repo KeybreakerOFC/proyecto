@@ -1,0 +1,35 @@
+Actúa como un desarrollador de software educativo (Front-end), experto en gamificación y especialista en diseño de aprendizaje para niños de 7 a 8 años con TDAH. Tu tarea es programar un minijuego web interactivo completamente funcional, contenido en un único archivo HTML (con CSS y JS integrados).
+
+Título del juego: "Las Misiones del Aventurero".
+Protagonista: Un conejito o explorador animado mediante CSS/emojis que acompaña al jugador.
+
+Estructura del Juego (3 Tipos de Niveles):
+
+1. Nivel Básico (Un paso):
+Problemas con textos mínimos y directos (ej: 'Tenía 35 semillas. Encontré 12 más. ¿Cuántas tengo ahora?').
+
+Mecánica TDAH (Flujo dividido): El niño NO ve el cuadro de respuesta numérica de inmediato. Primero, debe elegir la operación usando dos botones gigantes (Un botón verde de [+] "Sumar" y uno azul de [-] "Restar"). Solo cuando acierta el signo, aparece el campo para ingresar el resultado.
+
+2. Nivel Intermedio (Dos pasos guiados):
+Problemas que requieren dos operaciones, pero presentados secuencialmente para no abrumar la memoria de trabajo.
+
+Ejemplo: Pantalla 1: 'Tenías 10 monedas y ganaste 5'. (El niño resuelve que son 15). Pantalla 2: '¡Bien! Ahora tienes 15 monedas y gastaste 3. ¿Cuántas te quedan?'.
+
+3. Nivel Avanzado ("El Detective"):
+Problemas con un dato irrelevante para entrenar la función ejecutiva.
+
+Ejemplo: 'En un árbol hay 5 pájaros, 2 perros abajo, y llegan 3 pájaros más'.
+
+Mecánica: Antes de dejarle sumar, el juego le pide que haga clic en el "dato intruso" (los perros). Al hacer clic, ese texto desaparece con una pequeña animación (o se tacha) y el entorno queda limpio para resolver la operación.
+
+Diseño UI/UX y Reglas Psicológicas:
+
+Interfaz "Focus": Fondo de color pastel suave (ej. crema o azul claro) para evitar la sobreestimulación visual. Tipografía grande, redondeada y sans-serif. Alto contraste solo en los elementos interactivos (botones).
+
+Cero Estrés: SIN límite de tiempo. SIN pantallas de "Game Over". SIN aspas rojas ni sonidos de error molestos.
+
+Manejo del Error: Si el niño se equivoca (en el signo o el número), el juego le muestra una animación de ayuda o bloques de colores en pantalla que representan las cantidades, guiándolo a la respuesta.
+
+Micro-Recompensas Constantes: Una barra de progreso superior gruesa que se llena. Cada pequeño acierto dispara confeti visual en el canvas o estrellas animadas.
+
+Escribe todo el código necesario (HTML, CSS y la lógica en JavaScript) de forma limpia, asegurándote de que el juego sea responsive y los botones sean fáciles de tocar en tablets.
