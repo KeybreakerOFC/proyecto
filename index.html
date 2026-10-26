@@ -1,35 +1,1294 @@
-Actúa como un desarrollador de software educativo (Front-end), experto en gamificación y especialista en diseño de aprendizaje para niños de 7 a 8 años con TDAH. Tu tarea es programar un minijuego web interactivo completamente funcional, contenido en un único archivo HTML (con CSS y JS integrados).
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Las Misiones del Aventurero</title>
+    <!-- Tailwind CSS para estructura ágil y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Fredoka: Redondeada, muy legible y amigable para dislexia/TDAH -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-focus: #FDFBF7;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+        }
 
-Título del juego: "Las Misiones del Aventurero".
-Protagonista: Un conejito o explorador animado mediante CSS/emojis que acompaña al jugador.
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-Estructura del Juego (3 Tipos de Niveles):
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg-focus);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-1. Nivel Básico (Un paso):
-Problemas con textos mínimos y directos (ej: 'Tenía 35 semillas. Encontré 12 más. ¿Cuántas tengo ahora?').
+        /* Botones táctiles 3D con respuesta física inmediata */
+        .btn-3d {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 0 transparent !important;
+        }
 
-Mecánica TDAH (Flujo dividido): El niño NO ve el cuadro de respuesta numérica de inmediato. Primero, debe elegir la operación usando dos botones gigantes (Un botón verde de [+] "Sumar" y uno azul de [-] "Restar"). Solo cuando acierta el signo, aparece el campo para ingresar el resultado.
+        .btn-green {
+            background-color: #22C55E;
+            box-shadow: 0 6px 0 0 #15803D;
+            color: white;
+        }
+        .btn-green:hover:not(:disabled) { background-color: #16A34A; }
 
-2. Nivel Intermedio (Dos pasos guiados):
-Problemas que requieren dos operaciones, pero presentados secuencialmente para no abrumar la memoria de trabajo.
+        .btn-blue {
+            background-color: #3B82F6;
+            box-shadow: 0 6px 0 0 #1D4ED8;
+            color: white;
+        }
+        .btn-blue:hover:not(:disabled) { background-color: #2563EB; }
 
-Ejemplo: Pantalla 1: 'Tenías 10 monedas y ganaste 5'. (El niño resuelve que son 15). Pantalla 2: '¡Bien! Ahora tienes 15 monedas y gastaste 3. ¿Cuántas te quedan?'.
+        .btn-amber {
+            background-color: #F59E0B;
+            box-shadow: 0 6px 0 0 #B45309;
+            color: white;
+        }
+        .btn-amber:hover:not(:disabled) { background-color: #D97706; }
 
-3. Nivel Avanzado ("El Detective"):
-Problemas con un dato irrelevante para entrenar la función ejecutiva.
+        .btn-purple {
+            background-color: #8B5CF6;
+            box-shadow: 0 6px 0 0 #5B21B6;
+            color: white;
+        }
 
-Ejemplo: 'En un árbol hay 5 pájaros, 2 perros abajo, y llegan 3 pájaros más'.
+        .btn-numpad {
+            background-color: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            box-shadow: 0 5px 0 0 #CBD5E1;
+            color: #1E293B;
+        }
+        .btn-numpad:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 0 #CBD5E1 !important;
+            background-color: #F1F5F9;
+        }
 
-Mecánica: Antes de dejarle sumar, el juego le pide que haga clic en el "dato intruso" (los perros). Al hacer clic, ese texto desaparece con una pequeña animación (o se tacha) y el entorno queda limpio para resolver la operación.
+        /* Animaciones suaves */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-7px) rotate(2deg); }
+        }
+        .bunny-float {
+            animation: float 3s ease-in-out infinite;
+        }
 
-Diseño UI/UX y Reglas Psicológicas:
+        @keyframes hop {
+            0%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-18px) scale(1.1) rotate(-5deg); }
+            70% { transform: translateY(-5px) scale(1.05) rotate(5deg); }
+        }
+        .bunny-hop {
+            animation: hop 0.6s ease-in-out;
+        }
 
-Interfaz "Focus": Fondo de color pastel suave (ej. crema o azul claro) para evitar la sobreestimulación visual. Tipografía grande, redondeada y sans-serif. Alto contraste solo en los elementos interactivos (botones).
+        @keyframes poofOut {
+            0% { transform: scale(1); opacity: 1; }
+            40% { transform: scale(1.15) rotate(-3deg); background-color: #FEF08A; opacity: 0.9; }
+            100% { transform: scale(0); opacity: 0; width: 0; height: 0; padding: 0; margin: 0; overflow: hidden; border: none; }
+        }
+        .animate-poof {
+            animation: poofOut 0.55s forwards cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
 
-Cero Estrés: SIN límite de tiempo. SIN pantallas de "Game Over". SIN aspas rojas ni sonidos de error molestos.
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
 
-Manejo del Error: Si el niño se equivoca (en el signo o el número), el juego le muestra una animación de ayuda o bloques de colores en pantalla que representan las cantidades, guiándolo a la respuesta.
+        @keyframes pulseGentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .pulse-gentle {
+            animation: pulseGentle 2s infinite ease-in-out;
+        }
 
-Micro-Recompensas Constantes: Una barra de progreso superior gruesa que se llena. Cada pequeño acierto dispara confeti visual en el canvas o estrellas animadas.
+        /* Chip interactivo para el modo Detective */
+        .story-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.85rem;
+            margin: 0.25rem 0.15rem;
+            border-radius: 1rem;
+            border: 3px dashed #CBD5E1;
+            background-color: #F8FAFC;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .story-chip.detective-active {
+            border-color: #F59E0B;
+            background-color: #FFFBEB;
+            box-shadow: 0 4px 0 0 #FDE68A;
+        }
+        .story-chip.detective-active:hover {
+            transform: translateY(-2px);
+            background-color: #FEF3C7;
+        }
+        .story-chip.detective-active:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
 
-Escribe todo el código necesario (HTML, CSS y la lógica en JavaScript) de forma limpia, asegurándote de que el juego sea responsive y los botones sean fáciles de tocar en tablets.
+        /* Bloques manipulativos de base 10 */
+        .ten-rod {
+            display: inline-flex;
+            flex-direction: column;
+            border: 2px solid #0284C7;
+            background-color: #38BDF8;
+            border-radius: 6px;
+            padding: 2px;
+            gap: 2px;
+            margin: 3px;
+            box-shadow: 0 3px 0 #0369A1;
+        }
+        .ten-rod-unit {
+            width: 16px;
+            height: 6px;
+            background-color: #E0F2FE;
+            border-radius: 2px;
+        }
+        .unit-cube {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #FACC15;
+            border: 2px solid #CA8A04;
+            border-radius: 5px;
+            margin: 3px;
+            box-shadow: 0 3px 0 #A16207;
+        }
+        .crossed-out {
+            position: relative;
+            opacity: 0.35;
+            filter: grayscale(60%);
+        }
+        .crossed-out::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -15%;
+            width: 130%;
+            height: 4px;
+            background-color: #F97316;
+            transform: rotate(-35deg);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="selection:bg-amber-200">
+
+    <!-- Canvas superpuesto para confeti y celebraciones -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- Contenedor Principal Centrado y Limpio -->
+    <div class="max-w-3xl w-full mx-auto px-4 py-3 flex-1 flex flex-col justify-between gap-3">
+        
+        <!-- CABECERA: Navegación de Niveles, Progreso y Estrellas -->
+        <header class="bg-white rounded-3xl p-3 sm:p-4 shadow-sm border-2 border-slate-100 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <!-- Selector de Modo (3 Niveles) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-100 p-1.5 rounded-2xl">
+                    <button onclick="switchCategory(1)" id="tab-cat-1" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 bg-emerald-500 text-white shadow-sm">
+                        <span>🌱</span> <span>1. Básico</span>
+                    </button>
+                    <button onclick="switchCategory(2)" id="tab-cat-2" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60">
+                        <span>🪜</span> <span>2. Dos Pasos</span>
+                    </button>
+                    <button onclick="switchCategory(3)" id="tab-cat-3" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60">
+                        <span>🕵️</span> <span>3. Detective</span>
+                    </button>
+                </div>
+
+                <!-- Estrellas y Sonido -->
+                <div class="flex items-center gap-2 ml-auto">
+                    <div id="star-badge" class="flex items-center gap-1.5 bg-amber-100 border-2 border-amber-300 text-amber-900 px-3.5 py-1 rounded-2xl font-bold text-lg shadow-sm transition-transform">
+                        <span class="text-2xl">⭐</span>
+                        <span id="star-count">0</span>
+                    </div>
+                    <button onclick="toggleSound()" id="sound-btn" aria-label="Activar o desactivar sonido" class="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xl font-bold border-2 border-slate-200">
+                        🔊
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra de Progreso Gruesa (Micro-pasos) -->
+            <div class="flex items-center gap-3">
+                <span id="mission-counter" class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                    Misión 1 / 3
+                </span>
+                <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 flex-1">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500 ease-out" style="width: 15%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- COMPAÑERO AVENTURERO: El Conejito Leo -->
+        <section class="flex items-center gap-3 sm:gap-4 bg-amber-50/90 border-2 border-amber-200/80 rounded-3xl px-4 py-3 shadow-sm">
+            <div id="bunny-avatar" class="text-5xl sm:text-6xl bunny-float select-none flex-shrink-0 bg-white p-2 rounded-2xl shadow-sm border border-amber-100">
+                🐰🧭
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full">
+                        Leo el Explorador
+                    </span>
+                    <span id="step-badge" class="hidden text-xs font-bold uppercase tracking-wider bg-purple-200 text-purple-900 px-2.5 py-0.5 rounded-full">
+                        Paso 1 de 2
+                    </span>
+                </div>
+                <p id="bunny-speech" class="text-lg sm:text-xl font-semibold text-slate-800 mt-1 leading-snug">
+                    ¡Hola! Lee la misión con calma. Primero, ¿sumamos o restamos?
+                </p>
+            </div>
+        </section>
+
+        <!-- ÁREA CENTRAL DE LA MISIÓN (Tarjeta Focus) -->
+        <main class="bg-white rounded-3xl p-5 sm:p-7 shadow-md border-2 border-slate-100 flex-1 flex flex-col justify-between gap-5 relative overflow-hidden">
+            
+            <!-- Encabezado de la Historia -->
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <span id="mission-title" class="text-sm sm:text-base font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3.5 py-1 rounded-xl">
+                        🌱 El Huerto Mágico
+                    </span>
+                    <button onclick="showVisualHelp(false)" class="text-sm font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-3 py-1 rounded-xl flex items-center gap-1 transition-colors">
+                        <span>💡</span> <span>Ver Pista con Bloques</span>
+                    </button>
+                </div>
+
+                <!-- Contenedor del Texto del Problema -->
+                <div id="story-container" class="bg-slate-50/80 border-2 border-slate-200/80 rounded-2xl p-4 sm:p-6 text-xl sm:text-2xl md:text-3xl font-semibold text-slate-800 leading-relaxed tracking-wide text-center">
+                    <!-- Se inyecta dinámicamente -->
+                </div>
+            </div>
+
+            <!-- PANEL DE AYUDA VISUAL (Oculto por defecto, se abre si se equivoca o si pide pista) -->
+            <div id="visual-help-panel" class="hidden bg-sky-50/90 border-2 border-sky-300 rounded-2xl p-4 animate-pop-in">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-sky-900 text-base sm:text-lg flex items-center gap-2">
+                        <span>🧩</span> <span id="help-title">Mirémoslo con bloques:</span>
+                    </span>
+                    <button onclick="hideVisualHelp()" class="text-sky-700 hover:bg-sky-200/60 px-2.5 py-0.5 rounded-lg font-bold text-sm">
+                        Entendido ✓
+                    </button>
+                </div>
+                <p id="help-explanation" class="text-slate-700 font-medium text-base sm:text-lg mb-3"></p>
+                <div id="help-blocks-area" class="bg-white rounded-xl p-3 border border-sky-200 flex flex-wrap items-center justify-center gap-4 min-h-[70px]">
+                    <!-- Bloques generados por JS -->
+                </div>
+            </div>
+
+            <!-- ZONA INTERACTIVA CAMBIANTE (Flujo dividido para TDAH) -->
+            <div id="interaction-zone" class="flex flex-col justify-center">
+
+                <!-- FASE 0: MODO DETECTIVE (Tocar el dato intruso) -->
+                <div id="phase-detective" class="hidden flex-col items-center gap-3 py-2 animate-pop-in">
+                    <div class="bg-amber-100 border-2 border-amber-300 text-amber-950 px-5 py-3 rounded-2xl font-bold text-lg sm:text-xl flex items-center gap-3 pulse-gentle">
+                        <span class="text-3xl">🔍</span>
+                        <span>¡Hay un dato que NO sirve! Tócalo arriba en la historia para quitarlo.</span>
+                    </div>
+                </div>
+
+                <!-- FASE 1: ELEGIR LA OPERACIÓN (Botones Gigantes) -->
+                <div id="phase-operation" class="hidden flex-col items-center gap-4 py-1 animate-pop-in">
+                    <p class="text-base sm:text-lg font-bold text-slate-500 uppercase tracking-wider">
+                        Paso 1: ¿Qué operación necesitamos hacer?
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl">
+                        <button onclick="handleOperationChoice('+')" class="btn-3d btn-green rounded-3xl p-5 sm:p-6 flex items-center justify-center gap-4 text-left">
+                            <span class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/25 flex items-center justify-center text-4xl sm:text-5xl font-bold shadow-inner">
+                                +
+                            </span>
+                            <div>
+                                <div class="text-2xl sm:text-3xl font-bold leading-none">SUMAR</div>
+                                <div class="text-sm sm:text-base font-medium text-emerald-100 mt-1">Agregar / Juntar más</div>
+                            </div>
+                        </button>
+
+                        <button onclick="handleOperationChoice('-')" class="btn-3d btn-blue rounded-3xl p-5 sm:p-6 flex items-center justify-center gap-4 text-left">
+                            <span class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/25 flex items-center justify-center text-4xl sm:text-5xl font-bold shadow-inner">
+                                −
+                            </span>
+                            <div>
+                                <div class="text-2xl sm:text-3xl font-bold leading-none">RESTAR</div>
+                                <div class="text-sm sm:text-base font-medium text-blue-100 mt-1">Quitar / Quedan menos</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FASE 2: CALCULAR RESULTADO CON TECLADO TÁCTIL INTEGRADO -->
+                <div id="phase-calculate" class="hidden flex-col items-center gap-4 animate-pop-in">
+                    <!-- Ecuación Visual Clara -->
+                    <div class="flex items-center justify-center gap-2 sm:gap-4 bg-slate-100 px-5 py-3 rounded-2xl border-2 border-slate-200 w-full max-w-md">
+                        <span id="eq-num1" class="text-3xl sm:text-4xl font-bold text-slate-800">35</span>
+                        <span id="eq-sign" class="text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white">+</span>
+                        <span id="eq-num2" class="text-3xl sm:text-4xl font-bold text-slate-800">12</span>
+                        <span class="text-3xl sm:text-4xl font-bold text-slate-400">=</span>
+                        <div id="answer-box" class="min-w-[85px] sm:min-w-[100px] h-14 sm:h-16 px-3 bg-white border-4 border-amber-400 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl font-bold text-slate-900 shadow-inner">
+                            ?
+                        </div>
+                    </div>
+
+                    <!-- Teclado Numérico Amigable para Tablets -->
+                    <div class="w-full max-w-md grid grid-cols-3 gap-2.5 sm:gap-3">
+                        <button onclick="pressKey('1')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">1</button>
+                        <button onclick="pressKey('2')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">2</button>
+                        <button onclick="pressKey('3')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">3</button>
+                        <button onclick="pressKey('4')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">4</button>
+                        <button onclick="pressKey('5')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">5</button>
+                        <button onclick="pressKey('6')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">6</button>
+                        <button onclick="pressKey('7')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">7</button>
+                        <button onclick="pressKey('8')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">8</button>
+                        <button onclick="pressKey('9')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">9</button>
+                        <button onclick="pressKey('DEL')" class="btn-3d bg-amber-100 border-2 border-amber-300 text-amber-900 py-3 sm:py-3.5 rounded-2xl text-lg sm:text-xl font-bold flex items-center justify-center gap-1" style="box-shadow: 0 5px 0 0 #FCD34D;">
+                            <span>⌫</span> <span>Borrar</span>
+                        </button>
+                        <button onclick="pressKey('0')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">0</button>
+                        <button onclick="submitNumber()" class="btn-3d btn-green py-3 sm:py-3.5 rounded-2xl text-lg sm:text-xl font-bold flex items-center justify-center gap-1">
+                            <span>¡Listo!</span> <span>✓</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FASE 3: TRANSICIÓN DE ÉXITO A SIGUIENTE PASO O MISIÓN -->
+                <div id="phase-next" class="hidden flex-col items-center gap-4 py-3 animate-pop-in">
+                    <div id="success-banner" class="bg-emerald-50 border-2 border-emerald-300 text-emerald-900 px-6 py-4 rounded-2xl text-center max-w-md">
+                        <div class="text-4xl mb-1">🎉🌟</div>
+                        <div id="success-title" class="text-2xl font-bold">¡Misión Cumplida!</div>
+                        <p id="success-desc" class="text-base font-medium text-emerald-700 mt-1">Lo resolviste paso a paso como un gran explorador.</p>
+                    </div>
+                    <button onclick="advanceGame()" id="next-action-btn" class="btn-3d btn-amber px-8 py-4 rounded-3xl text-2xl font-bold flex items-center gap-3 pulse-gentle">
+                        <span id="next-action-text">Siguiente Misión</span>
+                        <span>➔</span>
+                    </button>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- PIE DE PÁGINA DISCRETO: Selector directo de misión dentro del nivel -->
+        <footer class="flex items-center justify-between px-2 py-1 text-sm text-slate-400 font-medium">
+            <div class="flex items-center gap-1.5">
+                <span>Misiones del nivel:</span>
+                <div id="mission-dots" class="flex items-center gap-1.5 ml-1">
+                    <!-- Puntos de navegación rápida -->
+                </div>
+            </div>
+            <span>Diseño Focus • Sin tiempo límite</span>
+        </footer>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           BASE DE DATOS DE MISIONES (3 NIVELES ADAPTADOS PARA TDAH)
+           ========================================================================== */
+        const MISSIONS_DB = {
+            // NIVEL 1: UN PASO (Directo: Elegir operación -> Calcular)
+            1: [
+                {
+                    id: '1-1',
+                    title: '🌱 El Huerto de Semillas',
+                    steps: [
+                        {
+                            storyHtml: 'Tenía <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">35 semillas</strong>. Encontré <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">12 más</strong> en el camino.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas semillas tengo ahora?</span>',
+                            num1: 35,
+                            num2: 12,
+                            op: '+',
+                            ans: 47,
+                            itemName: 'semillas',
+                            itemEmoji: '🌱',
+                            opHint: 'Como encontraste 12 semillas MÁS, tienes más cantidad que antes. ¡Vamos a SUMAR (+) para juntarlas!',
+                            calcHint: 'Juntamos las decenas (30 + 10 = 40) y las unidades (5 + 2 = 7). ¡En total son 47!'
+                        }
+                    ]
+                },
+                {
+                    id: '1-2',
+                    title: '🚌 El Autobús de la Selva',
+                    steps: [
+                        {
+                            storyHtml: 'Había <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">48 pasajeros</strong> en el autobús. Se bajaron <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">15 pasajeros</strong> en la estación.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos pasajeros quedan?</span>',
+                            num1: 48,
+                            num2: 15,
+                            op: '-',
+                            ans: 33,
+                            itemName: 'pasajeros',
+                            itemEmoji: '🎟️',
+                            opHint: 'Si se bajaron 15 pasajeros, ahora quedan MENOS personas en el autobús. ¡Toca RESTAR (−) para quitarlos!',
+                            calcHint: 'A 48 le quitamos 10 (quedan 38) y luego quitamos 5 unidades (8 - 5 = 3). ¡Quedan 33!'
+                        }
+                    ]
+                },
+                {
+                    id: '1-3',
+                    title: '🥕 Cosecha de Zanahorias',
+                    steps: [
+                        {
+                            storyHtml: 'Leo guardó <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">24 zanahorias</strong> en su mochila. Su amiga le regaló <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">15 más</strong>.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas zanahorias tiene en total?</span>',
+                            num1: 24,
+                            num2: 15,
+                            op: '+',
+                            ans: 39,
+                            itemName: 'zanahorias',
+                            itemEmoji: '🥕',
+                            opHint: 'Como le regalaron 15 zanahorias MÁS, su colección crece. ¡Necesitamos SUMAR (+) para agregarlas!',
+                            calcHint: 'Suma las barras de diez (20 + 10 = 30) y los cubitos sueltos (4 + 5 = 9). ¡Son 39!'
+                        }
+                    ]
+                }
+            ],
+
+            // NIVEL 2: DOS PASOS GUIADOS (Secuencial para proteger la memoria de trabajo)
+            2: [
+                {
+                    id: '2-1',
+                    title: '🪙 El Cofre de Monedas',
+                    steps: [
+                        {
+                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Tenías <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">10 monedas</strong> de oro y ganaste <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">5 monedas</strong> en un cofre.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas monedas tienes ahora?</span>',
+                            num1: 10,
+                            num2: 5,
+                            op: '+',
+                            ans: 15,
+                            itemName: 'monedas',
+                            itemEmoji: '🪙',
+                            opHint: 'Ganaste 5 monedas más, así que tenemos que SUMAR (+) para juntarlas con las 10 que tenías.',
+                            calcHint: '1 decena (10) más 5 unidades sueltas forman 15 monedas.'
+                        },
+                        {
+                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Genial! Segunda parte:</span>Ahora tienes <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">15 monedas</strong> y gastaste <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">3 monedas</strong> en un mapa.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas monedas te quedan?</span>',
+                            num1: 15,
+                            num2: 3,
+                            op: '-',
+                            ans: 12,
+                            itemName: 'monedas',
+                            itemEmoji: '🪙',
+                            opHint: 'Al gastar 3 monedas, salen de tu bolsa y te quedan MENOS. ¡Elegimos RESTAR (−)!',
+                            calcHint: 'A las 15 monedas le tachamos 3 unidades. ¡Te quedan 12 monedas!'
+                        }
+                    ]
+                },
+                {
+                    id: '2-2',
+                    title: '🍓 Fresas del Bosque',
+                    steps: [
+                        {
+                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Recolectaste <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">20 fresas</strong> por la mañana y <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">8 fresas</strong> por la tarde.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas fresas juntaste?</span>',
+                            num1: 20,
+                            num2: 8,
+                            op: '+',
+                            ans: 28,
+                            itemName: 'fresas',
+                            itemEmoji: '🍓',
+                            opHint: 'Queremos juntar las fresas de la mañana con las de la tarde. ¡Vamos a SUMAR (+)!',
+                            calcHint: '2 decenas (20) más 8 unidades forman 28 fresas.'
+                        },
+                        {
+                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Muy bien! Segunda parte:</span>Ahora tienes <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">28 fresas</strong> y te comiste <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">6 fresas</strong> para merendar.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas fresas quedan en la cesta?</span>',
+                            num1: 28,
+                            num2: 6,
+                            op: '-',
+                            ans: 22,
+                            itemName: 'fresas',
+                            itemEmoji: '🍓',
+                            opHint: 'Como te comiste 6 fresas, ya no están en la cesta. ¡Toca RESTAR (−) para quitarlas!',
+                            calcHint: 'A 28 le quitamos 6 unidades (8 - 6 = 2). ¡Quedan 22 fresas!'
+                        }
+                    ]
+                },
+                {
+                    id: '2-3',
+                    title: '🎈 Globos para la Fiesta',
+                    steps: [
+                        {
+                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Había <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">18 globos</strong> inflados, pero se escaparon <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">4 globos</strong> volando.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos globos quedaron?</span>',
+                            num1: 18,
+                            num2: 4,
+                            op: '-',
+                            ans: 14,
+                            itemName: 'globos',
+                            itemEmoji: '🎈',
+                            opHint: 'Si 4 globos se escaparon, quedan menos globos que al principio. ¡Elegimos RESTAR (−)!',
+                            calcHint: 'A 18 le quitamos 4 unidades (8 - 4 = 4). ¡Quedaron 14 globos!'
+                        },
+                        {
+                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Excelente! Segunda parte:</span>Tenías <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">14 globos</strong> y Leo infló <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">10 globos más</strong>.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos globos hay ahora en total?</span>',
+                            num1: 14,
+                            num2: 10,
+                            op: '+',
+                            ans: 24,
+                            itemName: 'globos',
+                            itemEmoji: '🎈',
+                            opHint: 'Leo infló 10 globos MÁS, así que ahora hay más cantidad. ¡Vamos a SUMAR (+)!',
+                            calcHint: 'A 14 le agregamos 1 barra de diez (14 + 10 = 24). ¡Son 24 globos!'
+                        }
+                    ]
+                }
+            ],
+
+            // NIVEL 3: MODO DETECTIVE (Filtrar el dato intruso antes de resolver)
+            3: [
+                {
+                    id: '3-1',
+                    title: '🕵️ El Árbol de los Pájaros',
+                    steps: [
+                        {
+                            isDetective: true,
+                            segments: [
+                                { text: 'En un árbol hay' },
+                                { text: '🐦 5 pájaros azules', isChip: true, isIntruder: false },
+                                { text: ',' },
+                                { text: '🐶 2 perros ladrando abajo', isChip: true, isIntruder: true },
+                                { text: 'y llegan' },
+                                { text: '🐦 3 pájaros rojos más', isChip: true, isIntruder: false },
+                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos pájaros hay en el árbol?</span>' }
+                            ],
+                            intruderHint: '¡Fíjate en la pregunta! Nos pregunta por los PÁJAROS. Toca donde dice "🐶 2 perros ladrando abajo" para borrarlo.',
+                            num1: 5,
+                            num2: 3,
+                            op: '+',
+                            ans: 8,
+                            itemName: 'pájaros',
+                            itemEmoji: '🐦',
+                            opHint: 'Llegaron 3 pájaros más al árbol. ¡Vamos a SUMAR (+) para juntar todos los pájaros!',
+                            calcHint: '5 pájaros azules más 3 pájaros rojos son 8 pájaros en total.'
+                        }
+                    ]
+                },
+                {
+                    id: '3-2',
+                    title: '🕵️ Manzanas en la Cesta',
+                    steps: [
+                        {
+                            isDetective: true,
+                            segments: [
+                                { text: 'En la mesa hay' },
+                                { text: '🍎 26 manzanas rojas', isChip: true, isIntruder: false },
+                                { text: ',' },
+                                { text: '🥄 4 cucharas de plata', isChip: true, isIntruder: true },
+                                { text: 'y usamos' },
+                                { text: '🍎 12 manzanas para un pastel', isChip: true, isIntruder: false },
+                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas manzanas quedan?</span>' }
+                            ],
+                            intruderHint: 'Estamos contando MANZANAS. ¡Las cucharas no tienen nada que ver! Toca "🥄 4 cucharas de plata" para quitarlas.',
+                            num1: 26,
+                            num2: 12,
+                            op: '-',
+                            ans: 14,
+                            itemName: 'manzanas',
+                            itemEmoji: '🍎',
+                            opHint: 'Como usamos 12 manzanas para hacer el pastel, quedan MENOS en la cesta. ¡Toca RESTAR (−)!',
+                            calcHint: 'A 26 le quitamos 10 (quedan 16) y quitamos 2 unidades (6 - 2 = 4). ¡Quedan 14 manzanas!'
+                        }
+                    ]
+                },
+                {
+                    id: '3-3',
+                    title: '🕵️ Excursión en la Laguna',
+                    steps: [
+                        {
+                            isDetective: true,
+                            segments: [
+                                { text: 'En la laguna nadan' },
+                                { text: '🦆 14 patos amarillos', isChip: true, isIntruder: false },
+                                { text: ', en el cielo brillan' },
+                                { text: '☁️ 7 nubes blancas', isChip: true, isIntruder: true },
+                                { text: 'y entran al agua' },
+                                { text: '🦆 11 patos más', isChip: true, isIntruder: false },
+                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos patos hay en la laguna?</span>' }
+                            ],
+                            intruderHint: 'La pregunta quiere saber cuántos PATOS hay. ¡Las nubes del cielo son el dato intruso! Tócalas.',
+                            num1: 14,
+                            num2: 11,
+                            op: '+',
+                            ans: 25,
+                            itemName: 'patos',
+                            itemEmoji: '🦆',
+                            opHint: 'Entraron 11 patos MÁS al agua, así que el grupo se hace más grande. ¡Elige SUMAR (+)!',
+                            calcHint: 'Juntamos las decenas (10 + 10 = 20) y las unidades (4 + 1 = 5). ¡Son 25 patos!'
+                        }
+                    ]
+                }
+            ]
+        };
+
+        /* ==========================================================================
+           ESTADO GLOBAL DEL JUEGO
+           ========================================================================== */
+        let state = {
+            category: 1,          // 1: Básico, 2: Dos Pasos, 3: Detective
+            missionIdx: 0,        // Índice de la misión dentro de la categoría (0..2)
+            stepIdx: 0,           // Paso dentro de la misión (0 o 1 para nivel 2)
+            phase: 'OPERATION',   // 'DETECTIVE' | 'OPERATION' | 'CALCULATE' | 'NEXT'
+            typedNumber: '',      // Número escrito en el teclado táctil
+            stars: 0,             // Contador total de estrellas
+            soundEnabled: true,   // Audio suave Web Audio API
+            intruderCleared: false
+        };
+
+        /* ==========================================================================
+           SISTEMA DE AUDIO AMIGABLE (Web Audio API - Cero sonidos bruscos)
+           ========================================================================== */
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playGentleSound(type) {
+            if (!state.soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'tap') {
+                    // Pop suave de burbuja
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(380, now);
+                    osc.frequency.exponentialRampToValueAtTime(520, now + 0.06);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } 
+                else if (type === 'poof') {
+                    // Sonido mágico ascendente al limpiar el intruso
+                    const notes = [440, 554.37, 659.25, 880];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.055);
+                        gain.gain.setValueAtTime(0.1, now + idx * 0.055);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.055 + 0.18);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.055);
+                        osc.stop(now + idx * 0.055 + 0.18);
+                    });
+                }
+                else if (type === 'step_ok') {
+                    // Acorde alegre corto (Do - Mi - Sol)
+                    const notes = [523.25, 659.25, 783.99];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.25);
+                    });
+                }
+                else if (type === 'win') {
+                    // Fanfarria suave de victoria
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.14, now + idx * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.35);
+                    });
+                }
+                else if (type === 'hint') {
+                    // Campanita cálida de orientación (NUNCA un timbre de error)
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(493.88, now + 0.12);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.32);
+                }
+            } catch (e) {
+                // Ignorar si el navegador bloquea audio antes de interacción
+            }
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            document.getElementById('sound-btn').textContent = state.soundEnabled ? '🔊' : '🔇';
+            if (state.soundEnabled) playGentleSound('tap');
+        }
+
+        /* ==========================================================================
+           SISTEMA DE MICRO-RECOMPENSAS Y CONFETI EN CANVAS
+           ========================================================================== */
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const ctx = confettiCanvas.getContext('2d');
+        let particles = [];
+        let animFrameId = null;
+
+        function resizeCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function fireConfetti(particleCount = 45) {
+            const colors = ['#22C55E', '#3B82F6', '#F59E0B', '#EC4899', '#A855F7', '#FACC15'];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: window.innerWidth / 2 + (Math.random() - 0.5) * 180,
+                    y: window.innerHeight * 0.55,
+                    vx: (Math.random() - 0.5) * 15,
+                    vy: -(Math.random() * 12 + 6),
+                    size: Math.random() * 9 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    vRot: (Math.random() - 0.5) * 10,
+                    gravity: 0.35,
+                    opacity: 1
+                });
+            }
+            if (!animFrameId) renderConfetti();
+        }
+
+        function renderConfetti() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            particles.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity;
+                p.rotation += p.vRot;
+                if (p.y > confettiCanvas.height * 0.75) {
+                    p.opacity -= 0.03;
+                }
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.opacity);
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+                ctx.restore();
+            });
+            particles = particles.filter(p => p.opacity > 0 && p.y < confettiCanvas.height + 40);
+            if (particles.length > 0) {
+                animFrameId = requestAnimationFrame(renderConfetti);
+            } else {
+                animFrameId = null;
+                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            }
+        }
+
+        function awardStars(amount, speechMessage) {
+            state.stars += amount;
+            const starEl = document.getElementById('star-count');
+            const badgeEl = document.getElementById('star-badge');
+            starEl.textContent = state.stars;
+            badgeEl.classList.add('scale-125', 'bg-amber-200');
+            setTimeout(() => badgeEl.classList.remove('scale-125', 'bg-amber-200'), 350);
+
+            // Animación alegre de Leo el Conejito
+            const bunny = document.getElementById('bunny-avatar');
+            bunny.classList.remove('bunny-hop');
+            void bunny.offsetWidth;
+            bunny.classList.add('bunny-hop');
+
+            if (speechMessage) {
+                setBunnySpeech(speechMessage);
+            }
+        }
+
+        function setBunnySpeech(text) {
+            const speechEl = document.getElementById('bunny-speech');
+            speechEl.textContent = text;
+        }
+
+        /* ==========================================================================
+           CONTROL DE NAVEGACIÓN Y CARGA DE MISIONES
+           ========================================================================== */
+        function getCurrentMission() {
+            return MISSIONS_DB[state.category][state.missionIdx];
+        }
+
+        function getCurrentStep() {
+            const mission = getCurrentMission();
+            return mission.steps[state.stepIdx];
+        }
+
+        function switchCategory(catNumber) {
+            playGentleSound('tap');
+            state.category = catNumber;
+            state.missionIdx = 0;
+            state.stepIdx = 0;
+            updateCategoryTabsUI();
+            loadCurrentStep();
+        }
+
+        function updateCategoryTabsUI() {
+            const styles = {
+                1: 'bg-emerald-500 text-white shadow-sm',
+                2: 'bg-purple-600 text-white shadow-sm',
+                3: 'bg-amber-500 text-white shadow-sm'
+            };
+            [1, 2, 3].forEach(c => {
+                const btn = document.getElementById(`tab-cat-${c}`);
+                if (c === state.category) {
+                    btn.className = `px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 ${styles[c]}`;
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60';
+                }
+            });
+        }
+
+        function loadCurrentStep() {
+            const mission = getCurrentMission();
+            const step = getCurrentStep();
+
+            state.typedNumber = '';
+            state.intruderCleared = !step.isDetective;
+            hideVisualHelp();
+
+            // Título de misión
+            document.getElementById('mission-title').textContent = mission.title;
+
+            // Badge de Dos Pasos si aplica
+            const stepBadge = document.getElementById('step-badge');
+            if (mission.steps.length > 1) {
+                stepBadge.classList.remove('hidden');
+                stepBadge.textContent = `Paso ${state.stepIdx + 1} de ${mission.steps.length}`;
+            } else {
+                stepBadge.classList.add('hidden');
+            }
+
+            // Renderizar historia (Normal o con Chips de Detective)
+            renderStoryContent(step);
+
+            // Determinar fase inicial del paso
+            if (step.isDetective && !state.intruderCleared) {
+                state.phase = 'DETECTIVE';
+                setBunnySpeech('¡Misión de Detective! Antes de calcular, toca el dato intruso que NO nos sirve.');
+            } else {
+                state.phase = 'OPERATION';
+                if (state.stepIdx === 1) {
+                    setBunnySpeech('¡Primer paso listo! Ahora lee la segunda parte y elige si sumamos o restamos.');
+                } else {
+                    setBunnySpeech('¡Lee con calma! Primero, ¿tenemos que SUMAR o RESTAR?');
+                }
+            }
+
+            updatePhaseVisibility();
+            updateProgressBar();
+            renderMissionDots();
+        }
+
+        function renderStoryContent(step) {
+            const container = document.getElementById('story-container');
+            if (!step.isDetective) {
+                container.innerHTML = step.storyHtml;
+                return;
+            }
+
+            // Si es modo Detective, creamos los chips interactivos
+            container.innerHTML = '';
+            step.segments.forEach((seg, idx) => {
+                if (!seg.isChip) {
+                    const span = document.createElement('span');
+                    span.innerHTML = ' ' + seg.text + ' ';
+                    container.appendChild(span);
+                } else {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.id = `detective-chip-${idx}`;
+                    chip.className = `story-chip ${!state.intruderCleared ? 'detective-active' : ''}`;
+                    chip.innerHTML = `<span>${seg.text}</span>`;
+                    chip.onclick = () => handleDetectiveChipClick(seg, chip, step);
+                    container.appendChild(chip);
+                }
+            });
+        }
+
+        /* ==========================================================================
+           LÓGICA DE LAS 3 FASES COGNITIVAS (Detective -> Signo -> Cálculo)
+           ========================================================================== */
+
+        // FASE 0: MODO DETECTIVE (Eliminar el dato irrelevante)
+        function handleDetectiveChipClick(segment, chipEl, step) {
+            if (state.phase !== 'DETECTIVE') return;
+
+            if (segment.isIntruder) {
+                // ¡Acertó el intruso!
+                playGentleSound('poof');
+                chipEl.innerHTML = `<span>💨 ¡Puf! Dato intruso fuera</span>`;
+                chipEl.classList.add('animate-poof');
+                state.intruderCleared = true;
+
+                // Desactivar bordes de detective de los otros chips válidos
+                document.querySelectorAll('.story-chip').forEach(el => {
+                    el.classList.remove('detective-active');
+                    el.style.borderStyle = 'solid';
+                    el.style.borderColor = '#10B981';
+                    el.style.backgroundColor = '#ECFDF5';
+                });
+
+                fireConfetti(30);
+                awardStars(1, '¡Gran ojo de detective! Limpiaste el problema. Ahora, ¿sumamos o restamos?');
+
+                setTimeout(() => {
+                    state.phase = 'OPERATION';
+                    updatePhaseVisibility();
+                    updateProgressBar();
+                }, 550);
+            } else {
+                // Tocó un dato que SÍ es necesario para el problema
+                playGentleSound('hint');
+                setBunnySpeech(step.intruderHint);
+                chipEl.classList.add('ring-4', 'ring-sky-300');
+                setTimeout(() => chipEl.classList.remove('ring-4', 'ring-sky-300'), 700);
+            }
+        }
+
+        // FASE 1: ELECCIÓN DE SIGNO (+ o -)
+        function handleOperationChoice(chosenOp) {
+            const step = getCurrentStep();
+            if (chosenOp === step.op) {
+                // ¡Acertó la operación! Micro-recompensa y pasa al teclado numérico
+                playGentleSound('step_ok');
+                fireConfetti(28);
+                hideVisualHelp();
+
+                const opWord = chosenOp === '+' ? 'SUMAR (+)' : 'RESTAR (−)';
+                awardStars(1, `¡Exacto, vamos a ${opWord}! Ahora usa los números para escribir el resultado.`);
+
+                state.phase = 'CALCULATE';
+                state.typedNumber = '';
+                setupEquationDisplay(step);
+                updatePhaseVisibility();
+                updateProgressBar();
+            } else {
+                // Se equivocó de signo -> Cero castigo, mostramos ayuda visual constructiva
+                playGentleSound('hint');
+                setBunnySpeech(step.opHint);
+                showVisualHelp(true);
+            }
+        }
+
+        function setupEquationDisplay(step) {
+            document.getElementById('eq-num1').textContent = step.num1;
+            document.getElementById('eq-num2').textContent = step.num2;
+            const signEl = document.getElementById('eq-sign');
+            signEl.textContent = step.op === '+' ? '+' : '−';
+            if (step.op === '+') {
+                signEl.className = 'text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white';
+            } else {
+                signEl.className = 'text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-blue-500 text-white';
+            }
+            updateAnswerBoxUI();
+        }
+
+        // FASE 2: TECLADO NUMÉRICO Y COMPROBACIÓN DE CÁLCULO
+        function pressKey(key) {
+            if (state.phase !== 'CALCULATE') return;
+            playGentleSound('tap');
+
+            if (key === 'DEL') {
+                state.typedNumber = state.typedNumber.slice(0, -1);
+            } else {
+                if (state.typedNumber.length < 3) {
+                    state.typedNumber += key;
+                }
+            }
+            updateAnswerBoxUI();
+        }
+
+        function updateAnswerBoxUI() {
+            const box = document.getElementById('answer-box');
+            if (state.typedNumber === '') {
+                box.textContent = '?';
+                box.classList.add('text-slate-400');
+                box.classList.remove('text-slate-900');
+            } else {
+                box.textContent = state.typedNumber;
+                box.classList.remove('text-slate-400');
+                box.classList.add('text-slate-900');
+            }
+        }
+
+        // Soporte para teclado físico además del táctil
+        window.addEventListener('keydown', (e) => {
+            if (state.phase !== 'CALCULATE') return;
+            if (e.key >= '0' && e.key <= '9') {
+                pressKey(e.key);
+            } else if (e.key === 'Backspace') {
+                pressKey('DEL');
+            } else if (e.key === 'Enter') {
+                submitNumber();
+            }
+        });
+
+        function submitNumber() {
+            if (state.phase !== 'CALCULATE') return;
+            if (state.typedNumber === '') {
+                playGentleSound('hint');
+                setBunnySpeech('Escribe un número usando los botones de abajo antes de darle a ¡Listo!');
+                return;
+            }
+
+            const step = getCurrentStep();
+            const userVal = parseInt(state.typedNumber, 10);
+
+            if (userVal === step.ans) {
+                // ¡Respuesta Correcta!
+                playGentleSound('win');
+                fireConfetti(65);
+                hideVisualHelp();
+
+                const mission = getCurrentMission();
+                const isFirstOfTwoSteps = (mission.steps.length > 1 && state.stepIdx === 0);
+
+                if (isFirstOfTwoSteps) {
+                    awardStars(2, `¡Súper! ${step.num1} ${step.op} ${step.num2} son ${step.ans}. ¡Vamos a la segunda parte de esta historia!`);
+                    document.getElementById('success-title').textContent = `¡Primera parte lista! (${step.ans} ${step.itemEmoji})`;
+                    document.getElementById('success-desc').textContent = `Ahora usemos esos ${step.ans} ${step.itemName} para terminar la misión.`;
+                    document.getElementById('next-action-text').textContent = 'Ir al Paso 2';
+                } else {
+                    awardStars(3, `¡Increíble! El resultado es ${step.ans} ${step.itemName}. ¡Ganaste 3 estrellas brillantes!`);
+                    document.getElementById('success-title').textContent = `¡Respuesta Exacta: ${step.ans} ${step.itemEmoji}!`;
+                    document.getElementById('success-desc').textContent = 'Completaste toda la misión con mucha concentración.';
+                    document.getElementById('next-action-text').textContent = 'Siguiente Misión';
+                }
+
+                state.phase = 'NEXT';
+                updatePhaseVisibility();
+                updateProgressBar();
+            } else {
+                // Error constructivo: mostramos los bloques manipulativos y limpiamos para que reintente sin estrés
+                playGentleSound('hint');
+                setBunnySpeech(`Casi, pusiste ${userVal}. ¡Mira los bloques de ayuda para contar juntos!`);
+                showVisualHelp(false);
+                state.typedNumber = '';
+                updateAnswerBoxUI();
+            }
+        }
+
+        function advanceGame() {
+            playGentleSound('tap');
+            const mission = getCurrentMission();
+
+            // Si estamos en una misión de 2 pasos y acabamos el paso 0, pasamos al paso 1
+            if (mission.steps.length > 1 && state.stepIdx === 0) {
+                state.stepIdx = 1;
+                loadCurrentStep();
+                return;
+            }
+
+            // Si terminamos la misión, avanzamos a la siguiente misión o siguiente nivel
+            state.stepIdx = 0;
+            if (state.missionIdx + 1 < MISSIONS_DB[state.category].length) {
+                state.missionIdx++;
+                loadCurrentStep();
+            } else {
+                // Pasamos al siguiente nivel automáticamente o volvemos al 1 con celebración
+                if (state.category < 3) {
+                    state.category++;
+                    state.missionIdx = 0;
+                    updateCategoryTabsUI();
+                    loadCurrentStep();
+                    setBunnySpeech(`¡Subiste al Nivel ${state.category}! Nuevas aventuras nos esperan.`);
+                } else {
+                    state.category = 1;
+                    state.missionIdx = 0;
+                    updateCategoryTabsUI();
+                    loadCurrentStep();
+                    fireConfetti(90);
+                    setBunnySpeech('¡Completaste todas las misiones del juego! Eres un maestro explorador.');
+                }
+            }
+        }
+
+        /* ==========================================================================
+           SISTEMA DE AYUDA VISUAL CON BLOQUES (DECENAS Y UNIDADES)
+           ========================================================================== */
+        function createBlocksHTML(number, crossedCount = 0) {
+            const tens = Math.floor(number / 10);
+            const units = number % 10;
+
+            const crossedTens = Math.floor(crossedCount / 10);
+            const crossedUnits = crossedCount % 10;
+
+            let html = '<div class="flex flex-wrap items-end justify-center gap-1.5">';
+
+            // Dibujar barras de 10 (Decenas)
+            for (let t = 0; t < tens; t++) {
+                const isCrossed = t >= (tens - crossedTens);
+                html += `<div class="ten-rod ${isCrossed ? 'crossed-out' : ''}" title="1 Decena (10)">`;
+                for (let u = 0; u < 10; u++) {
+                    html += '<div class="ten-rod-unit"></div>';
+                }
+                html += '</div>';
+            }
+
+            // Dibujar cubos sueltos (Unidades)
+            if (units > 0) {
+                html += '<div class="flex flex-wrap max-w-[125px] items-center justify-center p-1">';
+                for (let u = 0; u < units; u++) {
+                    const isCrossed = u >= (units - crossedUnits);
+                    html += `<div class="unit-cube ${isCrossed ? 'crossed-out' : ''}" title="1 Unidad (1)"></div>`;
+                }
+                html += '</div>';
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function showVisualHelp(isOperationHintOnly) {
+            const step = getCurrentStep();
+            const panel = document.getElementById('visual-help-panel');
+            const explanation = document.getElementById('help-explanation');
+            const blocksArea = document.getElementById('help-blocks-area');
+
+            panel.classList.remove('hidden');
+
+            if (isOperationHintOnly) {
+                explanation.textContent = step.opHint;
+            } else {
+                explanation.textContent = `${step.opHint} ${step.calcHint}`;
+            }
+
+            if (step.op === '+') {
+                blocksArea.innerHTML = `
+                    <div class="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                        <span class="text-sm font-bold text-slate-600 mb-1">${step.num1} ${step.itemEmoji}</span>
+                        ${createBlocksHTML(step.num1, 0)}
+                    </div>
+                    <div class="text-3xl font-bold text-emerald-600 bg-emerald-100 w-10 h-10 rounded-full flex items-center justify-center">+</div>
+                    <div class="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                        <span class="text-sm font-bold text-slate-600 mb-1">Agregamos ${step.num2} ${step.itemEmoji}</span>
+                        ${createBlocksHTML(step.num2, 0)}
+                    </div>
+                `;
+            } else {
+                blocksArea.innerHTML = `
+                    <div class="flex flex-col items-center bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                        <span class="text-sm font-bold text-slate-600 mb-1">Empezamos con ${step.num1} ${step.itemEmoji} y tachamos ${step.num2}:</span>
+                        ${createBlocksHTML(step.num1, step.num2)}
+                    </div>
+                `;
+            }
+        }
+
+        function hideVisualHelp() {
+            document.getElementById('visual-help-panel').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           ACTUALIZACIÓN DE LA INTERFAZ Y BARRA DE PROGRESO
+           ========================================================================== */
+        function updatePhaseVisibility() {
+            const phases = {
+                'DETECTIVE': document.getElementById('phase-detective'),
+                'OPERATION': document.getElementById('phase-operation'),
+                'CALCULATE': document.getElementById('phase-calculate'),
+                'NEXT': document.getElementById('phase-next')
+            };
+
+            Object.keys(phases).forEach(p => {
+                if (p === state.phase) {
+                    phases[p].classList.remove('hidden');
+                    phases[p].classList.add('flex');
+                } else {
+                    phases[p].classList.add('hidden');
+                    phases[p].classList.remove('flex');
+                }
+            });
+        }
+
+        function updateProgressBar() {
+            const totalMissions = MISSIONS_DB[state.category].length;
+            document.getElementById('mission-counter').textContent = `Misión ${state.missionIdx + 1} / ${totalMissions}`;
+
+            // Cada micro-paso llena la barra para dar sensación inmediata de avance
+            let subProgress = 0.2;
+            if (state.phase === 'OPERATION') subProgress = 0.45;
+            if (state.phase === 'CALCULATE') subProgress = 0.75;
+            if (state.phase === 'NEXT') subProgress = 1.0;
+
+            const missionProgress = ((state.missionIdx + subProgress) / totalMissions) * 100;
+            document.getElementById('progress-bar').style.width = `${Math.min(100, Math.max(12, missionProgress))}%`;
+        }
+
+        function renderMissionDots() {
+            const dotsContainer = document.getElementById('mission-dots');
+            dotsContainer.innerHTML = '';
+            const missions = MISSIONS_DB[state.category];
+
+            missions.forEach((m, idx) => {
+                const btn = document.createElement('button');
+                const isActive = idx === state.missionIdx;
+                btn.className = `w-7 h-7 rounded-lg font-bold text-xs transition-all ${
+                    isActive 
+                        ? 'bg-slate-800 text-white scale-110 shadow-sm' 
+                        : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                }`;
+                btn.textContent = idx + 1;
+                btn.onclick = () => {
+                    playGentleSound('tap');
+                    state.missionIdx = idx;
+                    state.stepIdx = 0;
+                    loadCurrentStep();
+                };
+                dotsContainer.appendChild(btn);
+            });
+        }
+
+        // Iniciar el juego al cargar la ventana
+        window.onload = function () {
+            loadCurrentStep();
+        };
+    </script>
+</body>
+</html>
