@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Las Misiones del Aventurero</title>
-    <!-- Tailwind CSS para estructura ágil y responsive -->
+    <title>Las Misiones del Aventurero: Mundo Arcade</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuente Fredoka: Redondeada, muy legible y amigable para dislexia/TDAH -->
+    <!-- Fuente Fredoka: Redondeada, legible y amigable para dislexia y TDAH -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-focus: #FDFBF7;
-            --card-bg: #FFFFFF;
-            --text-main: #2D3748;
+            --bg-focus: #F6F5F0;
+            --text-main: #1E293B;
         }
 
         * {
@@ -34,12 +33,12 @@
             flex-direction: column;
         }
 
-        /* Botones táctiles 3D con respuesta física inmediata */
+        /* Botones táctiles 3D con respuesta elástica */
         .btn-3d {
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease, background-color 0.15s ease;
         }
         .btn-3d:active:not(:disabled) {
-            transform: translateY(6px);
+            transform: translateY(5px) scale(0.98);
             box-shadow: 0 0px 0 0 transparent !important;
         }
 
@@ -69,122 +68,131 @@
             box-shadow: 0 6px 0 0 #5B21B6;
             color: white;
         }
+        .btn-purple:hover:not(:disabled) { background-color: #7C3AED; }
 
         .btn-numpad {
-            background-color: #F8FAFC;
-            border: 2px solid #E2E8F0;
-            box-shadow: 0 5px 0 0 #CBD5E1;
-            color: #1E293B;
+            background-color: #FFFFFF;
+            border: 2px solid #CBD5E1;
+            box-shadow: 0 5px 0 0 #94A3B8;
+            color: #0F172A;
         }
         .btn-numpad:active:not(:disabled) {
             transform: translateY(5px);
-            box-shadow: 0 0px 0 0 #CBD5E1 !important;
+            box-shadow: 0 0px 0 0 #94A3B8 !important;
             background-color: #F1F5F9;
         }
 
-        /* Animaciones suaves */
-        @keyframes float {
+        /* Escenario Arcade Interactivo (Inspirado en Pac-Man / Manipulativo) */
+        .arcade-stage {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.25rem;
+            border: 4px solid #334155;
+            box-shadow: inset 0 4px 15px rgba(0,0,0,0.25);
+            transition: background 0.4s ease;
+        }
+
+        .stage-pac-lane {
+            background: radial-gradient(circle at center, #1E1B4B 0%, #0F172A 100%);
+            border-color: #3B82F6;
+            box-shadow: inset 0 0 18px rgba(59, 130, 246, 0.45);
+        }
+        .pac-wall-top, .pac-wall-bottom {
+            height: 8px;
+            background: repeating-linear-gradient(90deg, #3B82F6 0px, #3B82F6 24px, #1D4ED8 24px, #1D4ED8 32px);
+            box-shadow: 0 0 8px #60A5FA;
+        }
+
+        /* Animaciones ricas y elásticas */
+        @keyframes floatIdle {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-7px) rotate(2deg); }
+            50% { transform: translateY(-6px) rotate(2deg); }
         }
         .bunny-float {
-            animation: float 3s ease-in-out infinite;
+            animation: floatIdle 2.6s ease-in-out infinite;
         }
 
-        @keyframes hop {
-            0%, 100% { transform: translateY(0) scale(1); }
-            40% { transform: translateY(-18px) scale(1.1) rotate(-5deg); }
-            70% { transform: translateY(-5px) scale(1.05) rotate(5deg); }
+        @keyframes wakaChomp {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.22, 0.85) rotate(8deg); }
         }
-        .bunny-hop {
-            animation: hop 0.6s ease-in-out;
+        .animate-waka {
+            animation: wakaChomp 0.22s ease-in-out 2;
         }
 
-        @keyframes poofOut {
+        @keyframes ghostFloat {
+            0%, 100% { transform: translate(0px, 0px) rotate(-4deg); }
+            25% { transform: translate(8px, -8px) rotate(4deg); }
+            50% { transform: translate(-6px, -4px) rotate(-3deg); }
+            75% { transform: translate(6px, 6px) rotate(5deg); }
+        }
+        .intruder-float {
+            animation: ghostFloat 2.4s ease-in-out infinite;
+        }
+
+        @keyframes pelletPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.6)); }
+            50% { transform: scale(1.14); filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.95)); }
+        }
+        .arcade-token {
+            animation: pelletPulse 1.5s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+        }
+        .arcade-token:hover {
+            transform: scale(1.25) !important;
+        }
+
+        @keyframes poofSmoke {
             0% { transform: scale(1); opacity: 1; }
-            40% { transform: scale(1.15) rotate(-3deg); background-color: #FEF08A; opacity: 0.9; }
-            100% { transform: scale(0); opacity: 0; width: 0; height: 0; padding: 0; margin: 0; overflow: hidden; border: none; }
+            40% { transform: scale(1.4) rotate(12deg); opacity: 0.9; }
+            100% { transform: scale(0); opacity: 0; }
         }
         .animate-poof {
-            animation: poofOut 0.55s forwards cubic-bezier(0.4, 0, 0.2, 1);
+            animation: poofSmoke 0.45s forwards ease-out;
             pointer-events: none;
         }
 
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+        @keyframes popElastic {
+            0% { opacity: 0; transform: scale(0.85) translateY(10px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         .animate-pop-in {
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: popElastic 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
-        @keyframes pulseGentle {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-        .pulse-gentle {
-            animation: pulseGentle 2s infinite ease-in-out;
-        }
-
-        /* Chip interactivo para el modo Detective */
-        .story-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.35rem 0.85rem;
-            margin: 0.25rem 0.15rem;
-            border-radius: 1rem;
-            border: 3px dashed #CBD5E1;
-            background-color: #F8FAFC;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .story-chip.detective-active {
-            border-color: #F59E0B;
-            background-color: #FFFBEB;
-            box-shadow: 0 4px 0 0 #FDE68A;
-        }
-        .story-chip.detective-active:hover {
-            transform: translateY(-2px);
-            background-color: #FEF3C7;
-        }
-        .story-chip.detective-active:active {
-            transform: translateY(2px);
-            box-shadow: none;
-        }
-
-        /* Bloques manipulativos de base 10 */
+        /* Bloques Base-10 y Recta Numérica */
         .ten-rod {
             display: inline-flex;
             flex-direction: column;
             border: 2px solid #0284C7;
             background-color: #38BDF8;
-            border-radius: 6px;
+            border-radius: 5px;
             padding: 2px;
-            gap: 2px;
-            margin: 3px;
+            gap: 1.5px;
+            margin: 2px;
             box-shadow: 0 3px 0 #0369A1;
         }
         .ten-rod-unit {
-            width: 16px;
-            height: 6px;
+            width: 14px;
+            height: 5px;
             background-color: #E0F2FE;
-            border-radius: 2px;
+            border-radius: 1px;
         }
         .unit-cube {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             background-color: #FACC15;
             border: 2px solid #CA8A04;
-            border-radius: 5px;
-            margin: 3px;
+            border-radius: 4px;
+            margin: 2px;
             box-shadow: 0 3px 0 #A16207;
         }
         .crossed-out {
             position: relative;
-            opacity: 0.35;
-            filter: grayscale(60%);
+            opacity: 0.32;
+            filter: grayscale(65%);
         }
         .crossed-out::after {
             content: '';
@@ -193,467 +201,636 @@
             left: -15%;
             width: 130%;
             height: 4px;
-            background-color: #F97316;
+            background-color: #EF4444;
             transform: rotate(-35deg);
             border-radius: 4px;
         }
+
+        /* Scrollbar limpio para mapa de 10 niveles en móvil */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="selection:bg-amber-200">
 
-    <!-- Canvas superpuesto para confeti y celebraciones -->
+    <!-- Canvas de Confeti y Estrellas -->
     <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
-    <!-- Contenedor Principal Centrado y Limpio -->
-    <div class="max-w-3xl w-full mx-auto px-4 py-3 flex-1 flex flex-col justify-between gap-3">
-        
-        <!-- CABECERA: Navegación de Niveles, Progreso y Estrellas -->
-        <header class="bg-white rounded-3xl p-3 sm:p-4 shadow-sm border-2 border-slate-100 flex flex-col gap-3">
+    <!-- Contenedor Principal Centrado -->
+    <div class="max-w-4xl w-full mx-auto px-3 sm:px-5 py-2.5 flex-1 flex flex-col justify-between gap-2.5">
+
+        <!-- CABECERA: Mapa de 10 Niveles, Estrellas, Tienda y Voz -->
+        <header class="bg-white rounded-3xl p-3 shadow-sm border-2 border-slate-200/80 flex flex-col gap-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <!-- Selector de Modo (3 Niveles) -->
-                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-100 p-1.5 rounded-2xl">
-                    <button onclick="switchCategory(1)" id="tab-cat-1" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 bg-emerald-500 text-white shadow-sm">
-                        <span>🌱</span> <span>1. Básico</span>
+                <!-- Título y Botón del Mapa de 10 Niveles -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openModal('map-modal')" class="btn-3d btn-purple px-3.5 py-1.5 rounded-2xl font-bold text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🗺️</span>
+                        <span>Mapa (10 Niveles)</span>
                     </button>
-                    <button onclick="switchCategory(2)" id="tab-cat-2" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60">
-                        <span>🪜</span> <span>2. Dos Pasos</span>
-                    </button>
-                    <button onclick="switchCategory(3)" id="tab-cat-3" class="px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60">
-                        <span>🕵️</span> <span>3. Detective</span>
-                    </button>
+                    <span id="category-pill" class="hidden sm:inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        🕹️ Arcade Básico
+                    </span>
                 </div>
 
-                <!-- Estrellas y Sonido -->
-                <div class="flex items-center gap-2 ml-auto">
-                    <div id="star-badge" class="flex items-center gap-1.5 bg-amber-100 border-2 border-amber-300 text-amber-900 px-3.5 py-1 rounded-2xl font-bold text-lg shadow-sm transition-transform">
-                        <span class="text-2xl">⭐</span>
+                <!-- Controles Superiores: Tienda de Sombreros, Estrellas, Voz y Sonido -->
+                <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
+                    <button onclick="openModal('shop-modal')" class="btn-3d bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-2xl font-bold text-sm sm:text-base flex items-center gap-1 shadow-sm" style="box-shadow: 0 5px 0 0 #9D174D;">
+                        <span>🎩</span>
+                        <span class="hidden xs:inline">Gorros</span>
+                    </button>
+
+                    <div id="star-badge" class="flex items-center gap-1 bg-amber-100 border-2 border-amber-300 text-amber-900 px-3 py-1 rounded-2xl font-bold text-base sm:text-lg transition-transform">
+                        <span>⭐</span>
                         <span id="star-count">0</span>
                     </div>
-                    <button onclick="toggleSound()" id="sound-btn" aria-label="Activar o desactivar sonido" class="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xl font-bold border-2 border-slate-200">
+
+                    <button onclick="speakCurrentMission()" title="Leer misión en voz alta" class="btn-3d bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-2xl font-bold text-sm sm:text-base flex items-center gap-1" style="box-shadow: 0 5px 0 0 #0369A1;">
+                        <span>🗣️</span>
+                        <span class="hidden md:inline">Escuchar</span>
+                    </button>
+
+                    <button onclick="toggleSound()" id="sound-btn" title="Activar o silenciar sonidos" class="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-lg font-bold border-2 border-slate-200">
                         🔊
                     </button>
                 </div>
             </div>
 
-            <!-- Barra de Progreso Gruesa (Micro-pasos) -->
-            <div class="flex items-center gap-3">
-                <span id="mission-counter" class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                    Misión 1 / 3
-                </span>
-                <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden p-1 border border-slate-200 flex-1">
-                    <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500 ease-out" style="width: 15%"></div>
-                </div>
+            <!-- Camino Rápido de los 10 Niveles + Barra de Progreso -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="top-level-strip">
+                <!-- Se genera dinámicamente del 1 al 10 -->
             </div>
         </header>
 
-        <!-- COMPAÑERO AVENTURERO: El Conejito Leo -->
-        <section class="flex items-center gap-3 sm:gap-4 bg-amber-50/90 border-2 border-amber-200/80 rounded-3xl px-4 py-3 shadow-sm">
-            <div id="bunny-avatar" class="text-5xl sm:text-6xl bunny-float select-none flex-shrink-0 bg-white p-2 rounded-2xl shadow-sm border border-amber-100">
-                🐰🧭
+        <!-- BARRA DEL PROTAGONISTA: Leo el Conejito Explorador con Sombrero Equipado -->
+        <section class="flex items-center gap-3 bg-amber-50/95 border-2 border-amber-200 rounded-3xl px-3.5 py-2.5 shadow-sm">
+            <div onclick="petBunny()" class="relative cursor-pointer group flex-shrink-0 bg-white w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-sm border-2 border-amber-200 flex items-center justify-center">
+                <div id="bunny-hat" class="absolute -top-3.5 text-2xl sm:text-3xl z-10 pointer-events-none transition-transform group-hover:scale-110">
+                    🧭
+                </div>
+                <div id="bunny-avatar" class="text-4xl sm:text-5xl bunny-float select-none mt-2">
+                    🐰
+                </div>
             </div>
-            <div class="flex-1">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full">
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs font-bold uppercase tracking-wider bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full">
                         Leo el Explorador
                     </span>
                     <span id="step-badge" class="hidden text-xs font-bold uppercase tracking-wider bg-purple-200 text-purple-900 px-2.5 py-0.5 rounded-full">
                         Paso 1 de 2
                     </span>
+                    <span id="level-indicator" class="text-xs font-bold text-slate-500 ml-auto">
+                        Nivel 1 de 10
+                    </span>
                 </div>
-                <p id="bunny-speech" class="text-lg sm:text-xl font-semibold text-slate-800 mt-1 leading-snug">
-                    ¡Hola! Lee la misión con calma. Primero, ¿sumamos o restamos?
+                <p id="bunny-speech" class="text-base sm:text-lg font-semibold text-slate-800 mt-0.5 leading-snug">
+                    ¡Bienvenido al Mundo Arcade! Toca los objetos brillantes en el escenario para empezar.
                 </p>
             </div>
         </section>
 
-        <!-- ÁREA CENTRAL DE LA MISIÓN (Tarjeta Focus) -->
-        <main class="bg-white rounded-3xl p-5 sm:p-7 shadow-md border-2 border-slate-100 flex-1 flex flex-col justify-between gap-5 relative overflow-hidden">
-            
-            <!-- Encabezado de la Historia -->
-            <div>
-                <div class="flex items-center justify-between gap-2 mb-3">
-                    <span id="mission-title" class="text-sm sm:text-base font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3.5 py-1 rounded-xl">
-                        🌱 El Huerto Mágico
-                    </span>
-                    <button onclick="showVisualHelp(false)" class="text-sm font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-3 py-1 rounded-xl flex items-center gap-1 transition-colors">
-                        <span>💡</span> <span>Ver Pista con Bloques</span>
-                    </button>
-                </div>
+        <!-- TARJETA CENTRAL DEL MINIJUEGO -->
+        <main class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border-2 border-slate-200/80 flex-1 flex flex-col justify-between gap-3.5 relative overflow-hidden">
 
-                <!-- Contenedor del Texto del Problema -->
-                <div id="story-container" class="bg-slate-50/80 border-2 border-slate-200/80 rounded-2xl p-4 sm:p-6 text-xl sm:text-2xl md:text-3xl font-semibold text-slate-800 leading-relaxed tracking-wide text-center">
-                    <!-- Se inyecta dinámicamente -->
+            <!-- Cabecera de la Misión + Botón de Pista Visual -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span id="mission-title" class="text-sm sm:text-base font-bold text-indigo-900 bg-indigo-100 border border-indigo-200 px-3 py-1 rounded-xl">
+                        🕹️ Nivel 1: Come-Semillas Arcade
+                    </span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="speakCurrentMission()" class="text-xs sm:text-sm font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                        <span>🔈</span> <span>Leer historia</span>
+                    </button>
+                    <button onclick="showVisualHelp(false)" class="text-xs sm:text-sm font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                        <span>💡</span> <span>Pista con Bloques</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- PANEL DE AYUDA VISUAL (Oculto por defecto, se abre si se equivoca o si pide pista) -->
-            <div id="visual-help-panel" class="hidden bg-sky-50/90 border-2 border-sky-300 rounded-2xl p-4 animate-pop-in">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-sky-900 text-base sm:text-lg flex items-center gap-2">
-                        <span>🧩</span> <span id="help-title">Mirémoslo con bloques:</span>
-                    </span>
-                    <button onclick="hideVisualHelp()" class="text-sky-700 hover:bg-sky-200/60 px-2.5 py-0.5 rounded-lg font-bold text-sm">
-                        Entendido ✓
-                    </button>
-                </div>
-                <p id="help-explanation" class="text-slate-700 font-medium text-base sm:text-lg mb-3"></p>
-                <div id="help-blocks-area" class="bg-white rounded-xl p-3 border border-sky-200 flex flex-wrap items-center justify-center gap-4 min-h-[70px]">
-                    <!-- Bloques generados por JS -->
-                </div>
-            </div>
+            <!-- ESCENARIO ARCADE INTERACTIVO (Tipo Pac-Man / Manipulativo / Detective) -->
+            <div id="arcade-stage" class="arcade-stage stage-pac-lane min-h-[155px] sm:min-h-[175px] flex flex-col justify-between relative select-none">
+                <!-- Paredes neón estilo Pac-Man (visibles según el tema del nivel) -->
+                <div id="pac-wall-top" class="pac-wall-top w-full"></div>
 
-            <!-- ZONA INTERACTIVA CAMBIANTE (Flujo dividido para TDAH) -->
-            <div id="interaction-zone" class="flex flex-col justify-center">
-
-                <!-- FASE 0: MODO DETECTIVE (Tocar el dato intruso) -->
-                <div id="phase-detective" class="hidden flex-col items-center gap-3 py-2 animate-pop-in">
-                    <div class="bg-amber-100 border-2 border-amber-300 text-amber-950 px-5 py-3 rounded-2xl font-bold text-lg sm:text-xl flex items-center gap-3 pulse-gentle">
-                        <span class="text-3xl">🔍</span>
-                        <span>¡Hay un dato que NO sirve! Tócalo arriba en la historia para quitarlo.</span>
+                <!-- HUD Interno del Escenario Arcade -->
+                <div class="flex items-center justify-between px-3 py-1.5 z-10">
+                    <div id="stage-counter-badge" class="bg-slate-900/85 text-amber-300 border border-amber-400/50 px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow">
+                        <span id="stage-counter-emoji">🌱</span>
+                        <span id="stage-counter-text">En el escenario: 35</span>
+                    </div>
+                    <div id="stage-instruction-pill" class="bg-amber-400 text-slate-950 px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold shadow animate-pulse">
+                        👆 ¡Toca las fichas para recolectar!
                     </div>
                 </div>
 
-                <!-- FASE 1: ELEGIR LA OPERACIÓN (Botones Gigantes) -->
-                <div id="phase-operation" class="hidden flex-col items-center gap-4 py-1 animate-pop-in">
-                    <p class="text-base sm:text-lg font-bold text-slate-500 uppercase tracking-wider">
-                        Paso 1: ¿Qué operación necesitamos hacer?
+                <!-- Pista de Juego donde se mueve Leo y aparecen los items/fantasmas -->
+                <div id="stage-playfield" class="flex-1 flex items-center justify-around px-4 py-2 relative min-h-[100px]">
+                    <!-- Generado dinámicamente por JS para cada uno de los 10 niveles -->
+                </div>
+
+                <div id="pac-wall-bottom" class="pac-wall-bottom w-full"></div>
+            </div>
+
+            <!-- TEXTO DE LA HISTORIA (Corto, claro y sincronizado con el escenario) -->
+            <div id="story-container" class="bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-lg sm:text-2xl font-semibold text-slate-800 leading-snug text-center">
+                <!-- Historia dinámica -->
+            </div>
+
+            <!-- PANEL DE AYUDA VISUAL CON BLOQUES Y RECTA NUMÉRICA (Cero Castigo) -->
+            <div id="visual-help-panel" class="hidden bg-sky-50 border-2 border-sky-300 rounded-2xl p-3.5 animate-pop-in">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="font-bold text-sky-900 text-sm sm:text-base flex items-center gap-1.5">
+                        <span>🧩</span> <span>Ayuda Visual de Leo (Decenas y Unidades):</span>
+                    </span>
+                    <button onclick="hideVisualHelp()" class="text-sky-800 bg-sky-200/70 hover:bg-sky-300/70 px-2.5 py-0.5 rounded-lg font-bold text-xs sm:text-sm">
+                        Cerrar ✕
+                    </button>
+                </div>
+                <p id="help-explanation" class="text-slate-700 font-medium text-sm sm:text-base mb-2"></p>
+                <!-- Recta Numérica de Saltos de Leo -->
+                <div id="help-numberline" class="bg-white rounded-xl p-2 mb-2 border border-sky-200 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-slate-700"></div>
+                <!-- Bloques Base 10 -->
+                <div id="help-blocks-area" class="bg-white rounded-xl p-2.5 border border-sky-200 flex flex-wrap items-center justify-center gap-3"></div>
+            </div>
+
+            <!-- ZONA DE CONTROLES DIVIDIDOS (Adaptado para TDAH) -->
+            <div id="interaction-zone" class="flex flex-col justify-center">
+
+                <!-- FASE 0: ACCIÓN EN EL MINIJUEGO ARCADE / DETECTIVE -->
+                <div id="phase-arcade" class="hidden flex-col items-center gap-2 py-1 animate-pop-in">
+                    <div id="arcade-prompt-box" class="bg-amber-100 border-2 border-amber-400 text-amber-950 px-4 py-2.5 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-2.5 text-center w-full max-w-xl">
+                        <span class="text-2xl">🕹️</span>
+                        <span id="arcade-prompt-text">¡Toca los elementos brillantes en el escenario de arriba para completar la acción!</span>
+                    </div>
+                </div>
+
+                <!-- FASE 1: DECISIÓN EJECUTIVA (¿SUMAR O RESTAR?) -->
+                <div id="phase-operation" class="hidden flex-col items-center gap-2.5 py-1 animate-pop-in">
+                    <p class="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">
+                        Paso 1: ¿Qué operación hacemos con lo que pasó en el escenario?
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl">
-                        <button onclick="handleOperationChoice('+')" class="btn-3d btn-green rounded-3xl p-5 sm:p-6 flex items-center justify-center gap-4 text-left">
-                            <span class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/25 flex items-center justify-center text-4xl sm:text-5xl font-bold shadow-inner">
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-xl">
+                        <button onclick="handleOperationChoice('+')" class="btn-3d btn-green rounded-3xl p-3.5 sm:p-5 flex items-center justify-center gap-3 text-left">
+                            <span class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/25 flex items-center justify-center text-3xl sm:text-4xl font-bold shadow-inner flex-shrink-0">
                                 +
                             </span>
                             <div>
-                                <div class="text-2xl sm:text-3xl font-bold leading-none">SUMAR</div>
-                                <div class="text-sm sm:text-base font-medium text-emerald-100 mt-1">Agregar / Juntar más</div>
+                                <div class="text-xl sm:text-2xl font-bold leading-none">SUMAR</div>
+                                <div class="text-xs sm:text-sm font-medium text-emerald-100 mt-1">Agregar / Juntar</div>
                             </div>
                         </button>
 
-                        <button onclick="handleOperationChoice('-')" class="btn-3d btn-blue rounded-3xl p-5 sm:p-6 flex items-center justify-center gap-4 text-left">
-                            <span class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/25 flex items-center justify-center text-4xl sm:text-5xl font-bold shadow-inner">
+                        <button onclick="handleOperationChoice('-')" class="btn-3d btn-blue rounded-3xl p-3.5 sm:p-5 flex items-center justify-center gap-3 text-left">
+                            <span class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/25 flex items-center justify-center text-3xl sm:text-4xl font-bold shadow-inner flex-shrink-0">
                                 −
                             </span>
                             <div>
-                                <div class="text-2xl sm:text-3xl font-bold leading-none">RESTAR</div>
-                                <div class="text-sm sm:text-base font-medium text-blue-100 mt-1">Quitar / Quedan menos</div>
+                                <div class="text-xl sm:text-2xl font-bold leading-none">RESTAR</div>
+                                <div class="text-xs sm:text-sm font-medium text-blue-100 mt-1">Quitar / Quedan menos</div>
                             </div>
                         </button>
                     </div>
                 </div>
 
-                <!-- FASE 2: CALCULAR RESULTADO CON TECLADO TÁCTIL INTEGRADO -->
-                <div id="phase-calculate" class="hidden flex-col items-center gap-4 animate-pop-in">
-                    <!-- Ecuación Visual Clara -->
-                    <div class="flex items-center justify-center gap-2 sm:gap-4 bg-slate-100 px-5 py-3 rounded-2xl border-2 border-slate-200 w-full max-w-md">
-                        <span id="eq-num1" class="text-3xl sm:text-4xl font-bold text-slate-800">35</span>
-                        <span id="eq-sign" class="text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white">+</span>
-                        <span id="eq-num2" class="text-3xl sm:text-4xl font-bold text-slate-800">12</span>
-                        <span class="text-3xl sm:text-4xl font-bold text-slate-400">=</span>
-                        <div id="answer-box" class="min-w-[85px] sm:min-w-[100px] h-14 sm:h-16 px-3 bg-white border-4 border-amber-400 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl font-bold text-slate-900 shadow-inner">
+                <!-- FASE 2: TECLADO TÁCTIL + BURBUJAS DE RESPUESTA RÁPIDA -->
+                <div id="phase-calculate" class="hidden flex-col items-center gap-3 animate-pop-in">
+                    <!-- Ecuación Visual Grande -->
+                    <div class="flex items-center justify-center gap-2 sm:gap-3 bg-slate-100 px-4 py-2 rounded-2xl border-2 border-slate-200 w-full max-w-md">
+                        <span id="eq-num1" class="text-2xl sm:text-4xl font-bold text-slate-800">35</span>
+                        <span id="eq-sign" class="text-2xl sm:text-3xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white">+</span>
+                        <span id="eq-num2" class="text-2xl sm:text-4xl font-bold text-slate-800">12</span>
+                        <span class="text-2xl sm:text-4xl font-bold text-slate-400">=</span>
+                        <div id="answer-box" class="min-w-[76px] sm:min-w-[92px] h-12 sm:h-14 px-3 bg-white border-4 border-amber-400 rounded-2xl flex items-center justify-center text-2xl sm:text-4xl font-bold text-slate-900 shadow-inner">
                             ?
                         </div>
                     </div>
 
-                    <!-- Teclado Numérico Amigable para Tablets -->
-                    <div class="w-full max-w-md grid grid-cols-3 gap-2.5 sm:gap-3">
-                        <button onclick="pressKey('1')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">1</button>
-                        <button onclick="pressKey('2')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">2</button>
-                        <button onclick="pressKey('3')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">3</button>
-                        <button onclick="pressKey('4')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">4</button>
-                        <button onclick="pressKey('5')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">5</button>
-                        <button onclick="pressKey('6')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">6</button>
-                        <button onclick="pressKey('7')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">7</button>
-                        <button onclick="pressKey('8')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">8</button>
-                        <button onclick="pressKey('9')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">9</button>
-                        <button onclick="pressKey('DEL')" class="btn-3d bg-amber-100 border-2 border-amber-300 text-amber-900 py-3 sm:py-3.5 rounded-2xl text-lg sm:text-xl font-bold flex items-center justify-center gap-1" style="box-shadow: 0 5px 0 0 #FCD34D;">
+                    <!-- Burbujas de Ayuda Rápida (Opcional para niños que prefieren tocar burbuja o usar teclado) -->
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-slate-400 uppercase mr-1">Burbujas rápidas o escribe abajo:</span>
+                        <div id="quick-bubbles" class="flex items-center gap-2"></div>
+                    </div>
+
+                    <!-- Teclado Numérico Táctil -->
+                    <div class="w-full max-w-md grid grid-cols-3 gap-2">
+                        <button onclick="pressKey('1')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">1</button>
+                        <button onclick="pressKey('2')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">2</button>
+                        <button onclick="pressKey('3')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">3</button>
+                        <button onclick="pressKey('4')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">4</button>
+                        <button onclick="pressKey('5')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">5</button>
+                        <button onclick="pressKey('6')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">6</button>
+                        <button onclick="pressKey('7')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">7</button>
+                        <button onclick="pressKey('8')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">8</button>
+                        <button onclick="pressKey('9')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">9</button>
+                        <button onclick="pressKey('DEL')" class="btn-3d bg-amber-100 border-2 border-amber-300 text-amber-900 py-2.5 rounded-2xl text-base sm:text-lg font-bold flex items-center justify-center gap-1" style="box-shadow: 0 5px 0 0 #FCD34D;">
                             <span>⌫</span> <span>Borrar</span>
                         </button>
-                        <button onclick="pressKey('0')" class="btn-3d btn-numpad py-3 sm:py-3.5 rounded-2xl text-2xl sm:text-3xl font-bold">0</button>
-                        <button onclick="submitNumber()" class="btn-3d btn-green py-3 sm:py-3.5 rounded-2xl text-lg sm:text-xl font-bold flex items-center justify-center gap-1">
-                            <span>¡Listo!</span> <span>✓</span>
+                        <button onclick="pressKey('0')" class="btn-3d btn-numpad py-2.5 rounded-2xl text-xl sm:text-2xl font-bold">0</button>
+                        <button onclick="submitNumber()" class="btn-3d btn-green py-2.5 rounded-2xl text-base sm:text-lg font-bold flex items-center justify-center gap-1">
+                            <span>¡Comprobar!</span> <span>✓</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- FASE 3: TRANSICIÓN DE ÉXITO A SIGUIENTE PASO O MISIÓN -->
-                <div id="phase-next" class="hidden flex-col items-center gap-4 py-3 animate-pop-in">
-                    <div id="success-banner" class="bg-emerald-50 border-2 border-emerald-300 text-emerald-900 px-6 py-4 rounded-2xl text-center max-w-md">
-                        <div class="text-4xl mb-1">🎉🌟</div>
-                        <div id="success-title" class="text-2xl font-bold">¡Misión Cumplida!</div>
-                        <p id="success-desc" class="text-base font-medium text-emerald-700 mt-1">Lo resolviste paso a paso como un gran explorador.</p>
+                <!-- FASE 3: PANTALLA DE RECOMPENSA Y PASO AL SIGUIENTE NIVEL -->
+                <div id="phase-next" class="hidden flex-col items-center gap-3 py-2 animate-pop-in">
+                    <div class="bg-emerald-50 border-2 border-emerald-300 text-emerald-950 px-5 py-3 rounded-2xl text-center max-w-md w-full">
+                        <div class="text-3xl mb-0.5">🏆✨</div>
+                        <div id="success-title" class="text-xl sm:text-2xl font-bold">¡Nivel Superado!</div>
+                        <p id="success-desc" class="text-sm sm:text-base font-medium text-emerald-700 mt-0.5">¡Ganaste estrellas para la tienda de sombreros de Leo!</p>
                     </div>
-                    <button onclick="advanceGame()" id="next-action-btn" class="btn-3d btn-amber px-8 py-4 rounded-3xl text-2xl font-bold flex items-center gap-3 pulse-gentle">
-                        <span id="next-action-text">Siguiente Misión</span>
+                    <button onclick="advanceGame()" class="btn-3d btn-amber px-8 py-3.5 rounded-3xl text-xl sm:text-2xl font-bold flex items-center gap-2">
+                        <span id="next-action-text">Siguiente Nivel</span>
                         <span>➔</span>
                     </button>
                 </div>
 
             </div>
         </main>
+    </div>
 
-        <!-- PIE DE PÁGINA DISCRETO: Selector directo de misión dentro del nivel -->
-        <footer class="flex items-center justify-between px-2 py-1 text-sm text-slate-400 font-medium">
-            <div class="flex items-center gap-1.5">
-                <span>Misiones del nivel:</span>
-                <div id="mission-dots" class="flex items-center gap-1.5 ml-1">
-                    <!-- Puntos de navegación rápida -->
+    <!-- MODAL 1: MAPA DEL MUNDO DE 10 NIVELES -->
+    <div id="map-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-6 border-4 border-purple-300 shadow-2xl animate-pop-in max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                    <span>🗺️</span> <span>Mapa de Misiones (10 Niveles)</span>
+                </h2>
+                <button onclick="closeModal('map-modal')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-2xl font-bold text-xl">✕</button>
+            </div>
+            <p class="text-slate-600 font-medium mb-4 text-sm sm:text-base">
+                Elige cualquier misión para jugar. ¡Completa los 10 niveles para convertirte en Leyenda Arcade!
+            </p>
+            <div id="map-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Se llena con los 10 niveles -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: TIENDA DE SOMBREROS Y ACCESORIOS PARA LEO -->
+    <div id="shop-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 border-4 border-pink-300 shadow-2xl animate-pop-in">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                    <span>🎩</span> <span>Tienda de Leo</span>
+                </h2>
+                <div class="flex items-center gap-2">
+                    <span class="bg-amber-100 border-2 border-amber-300 text-amber-900 px-3 py-1 rounded-xl font-bold">
+                        ⭐ <span id="shop-star-count">0</span>
+                    </span>
+                    <button onclick="closeModal('shop-modal')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-2xl font-bold text-xl">✕</button>
                 </div>
             </div>
-            <span>Diseño Focus • Sin tiempo límite</span>
-        </footer>
-
+            <p class="text-slate-600 font-medium mb-4 text-sm sm:text-base">
+                ¡Canjea tus estrellas ganadas por accesorios divertidos para Leo el Conejito!
+            </p>
+            <div id="shop-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <!-- Sombreros dinámicos -->
+            </div>
+        </div>
     </div>
 
     <script>
         /* ==========================================================================
-           BASE DE DATOS DE MISIONES (3 NIVELES ADAPTADOS PARA TDAH)
+           LOS 10 NIVELES INTERACTIVOS (Básicos Arcade, Dos Pasos y Detective)
            ========================================================================== */
-        const MISSIONS_DB = {
-            // NIVEL 1: UN PASO (Directo: Elegir operación -> Calcular)
-            1: [
-                {
-                    id: '1-1',
-                    title: '🌱 El Huerto de Semillas',
-                    steps: [
-                        {
-                            storyHtml: 'Tenía <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">35 semillas</strong>. Encontré <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">12 más</strong> en el camino.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas semillas tengo ahora?</span>',
-                            num1: 35,
-                            num2: 12,
-                            op: '+',
-                            ans: 47,
-                            itemName: 'semillas',
-                            itemEmoji: '🌱',
-                            opHint: 'Como encontraste 12 semillas MÁS, tienes más cantidad que antes. ¡Vamos a SUMAR (+) para juntarlas!',
-                            calcHint: 'Juntamos las decenas (30 + 10 = 40) y las unidades (5 + 2 = 7). ¡En total son 47!'
-                        }
-                    ]
-                },
-                {
-                    id: '1-2',
-                    title: '🚌 El Autobús de la Selva',
-                    steps: [
-                        {
-                            storyHtml: 'Había <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">48 pasajeros</strong> en el autobús. Se bajaron <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">15 pasajeros</strong> en la estación.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos pasajeros quedan?</span>',
-                            num1: 48,
-                            num2: 15,
-                            op: '-',
-                            ans: 33,
-                            itemName: 'pasajeros',
-                            itemEmoji: '🎟️',
-                            opHint: 'Si se bajaron 15 pasajeros, ahora quedan MENOS personas en el autobús. ¡Toca RESTAR (−) para quitarlos!',
-                            calcHint: 'A 48 le quitamos 10 (quedan 38) y luego quitamos 5 unidades (8 - 5 = 3). ¡Quedan 33!'
-                        }
-                    ]
-                },
-                {
-                    id: '1-3',
-                    title: '🥕 Cosecha de Zanahorias',
-                    steps: [
-                        {
-                            storyHtml: 'Leo guardó <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">24 zanahorias</strong> en su mochila. Su amiga le regaló <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">15 más</strong>.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas zanahorias tiene en total?</span>',
-                            num1: 24,
-                            num2: 15,
-                            op: '+',
-                            ans: 39,
-                            itemName: 'zanahorias',
-                            itemEmoji: '🥕',
-                            opHint: 'Como le regalaron 15 zanahorias MÁS, su colección crece. ¡Necesitamos SUMAR (+) para agregarlas!',
-                            calcHint: 'Suma las barras de diez (20 + 10 = 30) y los cubitos sueltos (4 + 5 = 9). ¡Son 39!'
-                        }
-                    ]
-                }
-            ],
+        const LEVELS = [
+            // --- NIVELES 1 A 4: MISIONES BÁSICAS + ARCADE ---
+            {
+                level: 1,
+                categoryName: '🕹️ Arcade Básico',
+                categoryColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                title: 'Nivel 1: Come-Semillas Pac-Conejo',
+                theme: 'pac-lane',
+                steps: [
+                    {
+                        arcadeType: 'pac-collect',
+                        startCount: 32,
+                        tokens: [
+                            { label: '+10', value: 10, emoji: '🌱' },
+                            { label: '+5', value: 5, emoji: '🌱' }
+                        ],
+                        prompt: '¡Modo Pac-Conejo! Toca las 2 semillas doradas del pasillo para que Leo se las coma.',
+                        storyHtml: 'Leo tenía <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">32 semillas</strong> y comió <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">15 semillas más</strong> en el laberinto. ¿Cuántas tiene ahora?',
+                        speechText: 'Nivel 1. Leo tenía 32 semillas y comió 15 semillas más en el laberinto. ¿Cuántas tiene ahora?',
+                        num1: 32, num2: 15, op: '+', ans: 47,
+                        itemName: 'semillas', itemEmoji: '🌱',
+                        opHint: 'Leo comió 15 semillas MÁS en el carril arcade, así que su colección aumentó. ¡Toca SUMAR (+)!',
+                        calcHint: '30 más 10 son 40, y 2 más 5 son 7. ¡En total son 47 semillas!'
+                    }
+                ]
+            },
+            {
+                level: 2,
+                categoryName: '🕹️ Arcade Básico',
+                categoryColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                title: 'Nivel 2: El Autobús Espacial',
+                theme: 'space-bus',
+                steps: [
+                    {
+                        arcadeType: 'bus-drop',
+                        startCount: 48,
+                        tokens: [
+                            { label: '-10', value: 10, emoji: '🧑‍🚀' },
+                            { label: '-5', value: 5, emoji: '🧑‍🚀' }
+                        ],
+                        prompt: '¡Llegamos al planeta! Toca a los 2 grupos de astronautas para que bajen del autobús.',
+                        storyHtml: 'Viajaban <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">48 pasajeros</strong> en el autobús espacial y bajaron <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">15 pasajeros</strong>. ¿Cuántos quedan a bordo?',
+                        speechText: 'Nivel 2. Viajaban 48 pasajeros en el autobús espacial y bajaron 15 pasajeros. ¿Cuántos quedan a bordo?',
+                        num1: 48, num2: 15, op: '-', ans: 33,
+                        itemName: 'pasajeros', itemEmoji: '🧑‍🚀',
+                        opHint: 'Como se bajaron 15 pasajeros, ahora quedan MENOS dentro del autobús. ¡Elige RESTAR (−)!',
+                        calcHint: 'A 48 le quitamos 10 (quedan 38) y luego quitamos 5 (8 - 5 = 3). ¡Quedan 33!'
+                    }
+                ]
+            },
+            {
+                level: 3,
+                categoryName: '🕹️ Arcade Básico',
+                categoryColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                title: 'Nivel 3: El Árbol de Manzanas Doradas',
+                theme: 'forest-tree',
+                steps: [
+                    {
+                        arcadeType: 'tree-harvest',
+                        startCount: 25,
+                        tokens: [
+                            { label: '+10', value: 10, emoji: '🍎' },
+                            { label: '+4', value: 4, emoji: '🍎' }
+                        ],
+                        prompt: '¡Sacude el árbol! Toca las manzanas brillantes para juntarlas en la cesta de Leo.',
+                        storyHtml: 'Había <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">25 manzanas</strong> en la cesta y cayeron <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">14 manzanas más</strong> del árbol. ¿Cuántas hay en total?',
+                        speechText: 'Nivel 3. Había 25 manzanas en la cesta y cayeron 14 manzanas más del árbol. ¿Cuántas hay en total?',
+                        num1: 25, num2: 14, op: '+', ans: 39,
+                        itemName: 'manzanas', itemEmoji: '🍎',
+                        opHint: 'Agregamos 14 manzanas MÁS a la cesta, por eso tenemos más cantidad. ¡Vamos a SUMAR (+)!',
+                        calcHint: '20 + 10 = 30, y 5 + 4 = 9. ¡En total hay 39 manzanas!'
+                    }
+                ]
+            },
+            {
+                level: 4,
+                categoryName: '🕹️ Arcade Básico',
+                categoryColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                title: 'Nivel 4: Burbujas de Cristal',
+                theme: 'crystal-cave',
+                steps: [
+                    {
+                        arcadeType: 'bubble-pop',
+                        startCount: 56,
+                        tokens: [
+                            { label: '-10', value: 10, emoji: '🫧' },
+                            { label: '-10', value: 10, emoji: '🫧' },
+                            { label: '-4', value: 4, emoji: '🫧' }
+                        ],
+                        prompt: '¡Plop, plop! Toca las 3 burbujas gigantes para explotarlas en el aire.',
+                        storyHtml: 'Flotaban <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">56 burbujas</strong> mágicas y explotaron <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">24 burbujas</strong>. ¿Cuántas quedan flotando?',
+                        speechText: 'Nivel 4. Flotaban 56 burbujas mágicas y explotaron 24 burbujas. ¿Cuántas quedan flotando?',
+                        num1: 56, num2: 24, op: '-', ans: 32,
+                        itemName: 'burbujas', itemEmoji: '🫧',
+                        opHint: 'Las burbujas que explotaron ya no están, así que quedan MENOS. ¡Toca RESTAR (−)!',
+                        calcHint: 'A 50 le quitamos 20 (30) y a 6 le quitamos 4 (2). ¡Quedan 32 burbujas!'
+                    }
+                ]
+            },
 
-            // NIVEL 2: DOS PASOS GUIADOS (Secuencial para proteger la memoria de trabajo)
-            2: [
-                {
-                    id: '2-1',
-                    title: '🪙 El Cofre de Monedas',
-                    steps: [
-                        {
-                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Tenías <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">10 monedas</strong> de oro y ganaste <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">5 monedas</strong> en un cofre.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas monedas tienes ahora?</span>',
-                            num1: 10,
-                            num2: 5,
-                            op: '+',
-                            ans: 15,
-                            itemName: 'monedas',
-                            itemEmoji: '🪙',
-                            opHint: 'Ganaste 5 monedas más, así que tenemos que SUMAR (+) para juntarlas con las 10 que tenías.',
-                            calcHint: '1 decena (10) más 5 unidades sueltas forman 15 monedas.'
-                        },
-                        {
-                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Genial! Segunda parte:</span>Ahora tienes <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">15 monedas</strong> y gastaste <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">3 monedas</strong> en un mapa.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas monedas te quedan?</span>',
-                            num1: 15,
-                            num2: 3,
-                            op: '-',
-                            ans: 12,
-                            itemName: 'monedas',
-                            itemEmoji: '🪙',
-                            opHint: 'Al gastar 3 monedas, salen de tu bolsa y te quedan MENOS. ¡Elegimos RESTAR (−)!',
-                            calcHint: 'A las 15 monedas le tachamos 3 unidades. ¡Te quedan 12 monedas!'
-                        }
-                    ]
-                },
-                {
-                    id: '2-2',
-                    title: '🍓 Fresas del Bosque',
-                    steps: [
-                        {
-                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Recolectaste <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">20 fresas</strong> por la mañana y <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">8 fresas</strong> por la tarde.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas fresas juntaste?</span>',
-                            num1: 20,
-                            num2: 8,
-                            op: '+',
-                            ans: 28,
-                            itemName: 'fresas',
-                            itemEmoji: '🍓',
-                            opHint: 'Queremos juntar las fresas de la mañana con las de la tarde. ¡Vamos a SUMAR (+)!',
-                            calcHint: '2 decenas (20) más 8 unidades forman 28 fresas.'
-                        },
-                        {
-                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Muy bien! Segunda parte:</span>Ahora tienes <strong class="text-rose-700 bg-rose-100 px-2 py-0.5 rounded-lg">28 fresas</strong> y te comiste <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">6 fresas</strong> para merendar.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas fresas quedan en la cesta?</span>',
-                            num1: 28,
-                            num2: 6,
-                            op: '-',
-                            ans: 22,
-                            itemName: 'fresas',
-                            itemEmoji: '🍓',
-                            opHint: 'Como te comiste 6 fresas, ya no están en la cesta. ¡Toca RESTAR (−) para quitarlas!',
-                            calcHint: 'A 28 le quitamos 6 unidades (8 - 6 = 2). ¡Quedan 22 fresas!'
-                        }
-                    ]
-                },
-                {
-                    id: '2-3',
-                    title: '🎈 Globos para la Fiesta',
-                    steps: [
-                        {
-                            storyHtml: '<span class="text-purple-700 font-bold block text-lg mb-1">Primera parte:</span>Había <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">18 globos</strong> inflados, pero se escaparon <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">4 globos</strong> volando.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos globos quedaron?</span>',
-                            num1: 18,
-                            num2: 4,
-                            op: '-',
-                            ans: 14,
-                            itemName: 'globos',
-                            itemEmoji: '🎈',
-                            opHint: 'Si 4 globos se escaparon, quedan menos globos que al principio. ¡Elegimos RESTAR (−)!',
-                            calcHint: 'A 18 le quitamos 4 unidades (8 - 4 = 4). ¡Quedaron 14 globos!'
-                        },
-                        {
-                            storyHtml: '<span class="text-emerald-700 font-bold block text-lg mb-1">¡Excelente! Segunda parte:</span>Tenías <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">14 globos</strong> y Leo infló <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">10 globos más</strong>.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos globos hay ahora en total?</span>',
-                            num1: 14,
-                            num2: 10,
-                            op: '+',
-                            ans: 24,
-                            itemName: 'globos',
-                            itemEmoji: '🎈',
-                            opHint: 'Leo infló 10 globos MÁS, así que ahora hay más cantidad. ¡Vamos a SUMAR (+)!',
-                            calcHint: 'A 14 le agregamos 1 barra de diez (14 + 10 = 24). ¡Son 24 globos!'
-                        }
-                    ]
-                }
-            ],
+            // --- NIVELES 5 A 7: MISIONES DE DOS PASOS GUIADOS ---
+            {
+                level: 5,
+                categoryName: '🪜 Misión de 2 Pasos',
+                categoryColor: 'bg-purple-100 text-purple-900 border-purple-300',
+                title: 'Nivel 5: La Tienda del Bosque (2 Pasos)',
+                theme: 'forest-shop',
+                steps: [
+                    {
+                        arcadeType: 'chest-open',
+                        startCount: 20,
+                        tokens: [
+                            { label: '+10', value: 10, emoji: '🪙' },
+                            { label: '+5', value: 5, emoji: '🪙' }
+                        ],
+                        prompt: 'Paso 1: ¡Toca los cofres brillantes para recoger las monedas ganadas!',
+                        storyHtml: '<span class="text-purple-700 font-bold">Paso 1:</span> Leo tenía <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">20 monedas</strong> y encontró <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">15 monedas</strong> en dos cofres. ¿Cuántas tiene ahora?',
+                        speechText: 'Nivel 5, Primera parte. Leo tenía 20 monedas y encontró 15 monedas en dos cofres. ¿Cuántas tiene ahora?',
+                        num1: 20, num2: 15, op: '+', ans: 35,
+                        itemName: 'monedas', itemEmoji: '🪙',
+                        opHint: 'Encontró 15 monedas nuevas, así que las juntamos con SUMAR (+).',
+                        calcHint: '20 monedas más 15 monedas son 35 monedas.'
+                    },
+                    {
+                        arcadeType: 'shop-spend',
+                        startCount: 35,
+                        tokens: [
+                            { label: '-10', value: 10, emoji: '🔦' },
+                            { label: '-3', value: 3, emoji: '🗺️' }
+                        ],
+                        prompt: 'Paso 2: ¡Toca la linterna y el mapa para pagarlos con tus 35 monedas!',
+                        storyHtml: '<span class="text-emerald-700 font-bold">Paso 2:</span> Ahora Leo tiene <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">35 monedas</strong> y gasta <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">13 monedas</strong> en la tienda. ¿Cuántas le quedan?',
+                        speechText: 'Segunda parte. Ahora Leo tiene 35 monedas y gasta 13 monedas en la tienda. ¿Cuántas le quedan?',
+                        num1: 35, num2: 13, op: '-', ans: 22,
+                        itemName: 'monedas', itemEmoji: '🪙',
+                        opHint: 'Al gastar 13 monedas en la tienda, te quedan MENOS monedas. ¡Elegimos RESTAR (−)!',
+                        calcHint: 'A 35 le quitamos 10 (25) y luego 3 unidades (22). ¡Quedan 22 monedas!'
+                    }
+                ]
+            },
+            {
+                level: 6,
+                categoryName: '🪜 Misión de 2 Pasos',
+                categoryColor: 'bg-purple-100 text-purple-900 border-purple-300',
+                title: 'Nivel 6: Laberinto Come-Zanahorias (2 Pasos)',
+                theme: 'pac-lane',
+                steps: [
+                    {
+                        arcadeType: 'pac-collect',
+                        startCount: 14,
+                        tokens: [
+                            { label: '+10', value: 10, emoji: '🥕' },
+                            { label: '+5', value: 5, emoji: '🥕' }
+                        ],
+                        prompt: 'Paso 1: ¡Toca las Súper Zanahorias del laberinto para que Leo las recolecte!',
+                        storyHtml: '<span class="text-purple-700 font-bold">Paso 1:</span> Leo llevaba <strong class="text-orange-700 bg-orange-100 px-2 py-0.5 rounded-lg">14 zanahorias</strong> y recolectó <strong class="text-orange-700 bg-orange-100 px-2 py-0.5 rounded-lg">15 más</strong> en el pasillo. ¿Cuántas juntó?',
+                        speechText: 'Nivel 6, Primera parte. Leo llevaba 14 zanahorias y recolectó 15 más en el pasillo. ¿Cuántas juntó?',
+                        num1: 14, num2: 15, op: '+', ans: 29,
+                        itemName: 'zanahorias', itemEmoji: '🥕',
+                        opHint: 'Recolectó 15 zanahorias MÁS, así que vamos a SUMAR (+).',
+                        calcHint: '14 más 15 son 29 zanahorias en total.'
+                    },
+                    {
+                        arcadeType: 'share-friends',
+                        startCount: 29,
+                        tokens: [
+                            { label: '-4', value: 4, emoji: '🐹' },
+                            { label: '-3', value: 3, emoji: '🐿️' }
+                        ],
+                        prompt: 'Paso 2: ¡Toca a sus amigos del bosque para compartir 7 zanahorias con ellos!',
+                        storyHtml: '<span class="text-emerald-700 font-bold">Paso 2:</span> De sus <strong class="text-orange-700 bg-orange-100 px-2 py-0.5 rounded-lg">29 zanahorias</strong>, Leo regaló <strong class="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-lg">7 zanahorias</strong> a sus amigos. ¿Cuántas le quedan?',
+                        speechText: 'Segunda parte. De sus 29 zanahorias, Leo regaló 7 zanahorias a sus amigos. ¿Cuántas le quedan?',
+                        num1: 29, num2: 7, op: '-', ans: 22,
+                        itemName: 'zanahorias', itemEmoji: '🥕',
+                        opHint: 'Como regaló 7 zanahorias, ahora tiene MENOS en su mochila. ¡Toca RESTAR (−)!',
+                        calcHint: 'A 29 le quitamos 7 unidades (9 - 7 = 2). ¡Le quedan 22 zanahorias!'
+                    }
+                ]
+            },
+            {
+                level: 7,
+                categoryName: '🪜 Misión de 2 Pasos',
+                categoryColor: 'bg-purple-100 text-purple-900 border-purple-300',
+                title: 'Nivel 7: El Cohete de Estrellas (2 Pasos)',
+                theme: 'space-bus',
+                steps: [
+                    {
+                        arcadeType: 'fuel-use',
+                        startCount: 45,
+                        tokens: [
+                            { label: '-10', value: 10, emoji: '⚡' },
+                            { label: '-5', value: 5, emoji: '⚡' }
+                        ],
+                        prompt: 'Paso 1: ¡Toca las 2 baterías de energía para impulsar el despegue del cohete!',
+                        storyHtml: '<span class="text-purple-700 font-bold">Paso 1:</span> El cohete tenía <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">45 baterías</strong> y usó <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">15 baterías</strong> al despegar. ¿Cuántas quedaron?',
+                        speechText: 'Nivel 7, Primera parte. El cohete tenía 45 baterías y usó 15 baterías al despegar. ¿Cuántas quedaron?',
+                        num1: 45, num2: 15, op: '-', ans: 30,
+                        itemName: 'baterías', itemEmoji: '⚡',
+                        opHint: 'Usamos 15 baterías en el despegue, por lo que quedan MENOS. ¡Elegimos RESTAR (−)!',
+                        calcHint: 'A 45 le quitamos 15 y nos quedan exactamente 30 baterías.'
+                    },
+                    {
+                        arcadeType: 'pac-collect',
+                        startCount: 30,
+                        tokens: [
+                            { label: '+10', value: 10, emoji: '🌟' },
+                            { label: '+8', value: 8, emoji: '🌟' }
+                        ],
+                        prompt: 'Paso 2: ¡Toca las estrellas espaciales para recargar el cohete en órbita!',
+                        storyHtml: '<span class="text-emerald-700 font-bold">Paso 2:</span> Quedaban <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">30 baterías</strong> y recargamos <strong class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg">18 más</strong> con energía solar. ¿Cuántas hay ahora?',
+                        speechText: 'Segunda parte. Quedaban 30 baterías y recargamos 18 más con energía solar. ¿Cuántas hay ahora?',
+                        num1: 30, num2: 18, op: '+', ans: 48,
+                        itemName: 'baterías', itemEmoji: '⚡',
+                        opHint: 'Al recargar 18 baterías MÁS, aumentamos la energía. ¡Toca SUMAR (+)!',
+                        calcHint: '30 más 18 forman 48 baterías listas para viajar.'
+                    }
+                ]
+            },
 
-            // NIVEL 3: MODO DETECTIVE (Filtrar el dato intruso antes de resolver)
-            3: [
-                {
-                    id: '3-1',
-                    title: '🕵️ El Árbol de los Pájaros',
-                    steps: [
-                        {
-                            isDetective: true,
-                            segments: [
-                                { text: 'En un árbol hay' },
-                                { text: '🐦 5 pájaros azules', isChip: true, isIntruder: false },
-                                { text: ',' },
-                                { text: '🐶 2 perros ladrando abajo', isChip: true, isIntruder: true },
-                                { text: 'y llegan' },
-                                { text: '🐦 3 pájaros rojos más', isChip: true, isIntruder: false },
-                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos pájaros hay en el árbol?</span>' }
-                            ],
-                            intruderHint: '¡Fíjate en la pregunta! Nos pregunta por los PÁJAROS. Toca donde dice "🐶 2 perros ladrando abajo" para borrarlo.',
-                            num1: 5,
-                            num2: 3,
-                            op: '+',
-                            ans: 8,
-                            itemName: 'pájaros',
-                            itemEmoji: '🐦',
-                            opHint: 'Llegaron 3 pájaros más al árbol. ¡Vamos a SUMAR (+) para juntar todos los pájaros!',
-                            calcHint: '5 pájaros azules más 3 pájaros rojos son 8 pájaros en total.'
-                        }
-                    ]
-                },
-                {
-                    id: '3-2',
-                    title: '🕵️ Manzanas en la Cesta',
-                    steps: [
-                        {
-                            isDetective: true,
-                            segments: [
-                                { text: 'En la mesa hay' },
-                                { text: '🍎 26 manzanas rojas', isChip: true, isIntruder: false },
-                                { text: ',' },
-                                { text: '🥄 4 cucharas de plata', isChip: true, isIntruder: true },
-                                { text: 'y usamos' },
-                                { text: '🍎 12 manzanas para un pastel', isChip: true, isIntruder: false },
-                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántas manzanas quedan?</span>' }
-                            ],
-                            intruderHint: 'Estamos contando MANZANAS. ¡Las cucharas no tienen nada que ver! Toca "🥄 4 cucharas de plata" para quitarlas.',
-                            num1: 26,
-                            num2: 12,
-                            op: '-',
-                            ans: 14,
-                            itemName: 'manzanas',
-                            itemEmoji: '🍎',
-                            opHint: 'Como usamos 12 manzanas para hacer el pastel, quedan MENOS en la cesta. ¡Toca RESTAR (−)!',
-                            calcHint: 'A 26 le quitamos 10 (quedan 16) y quitamos 2 unidades (6 - 2 = 4). ¡Quedan 14 manzanas!'
-                        }
-                    ]
-                },
-                {
-                    id: '3-3',
-                    title: '🕵️ Excursión en la Laguna',
-                    steps: [
-                        {
-                            isDetective: true,
-                            segments: [
-                                { text: 'En la laguna nadan' },
-                                { text: '🦆 14 patos amarillos', isChip: true, isIntruder: false },
-                                { text: ', en el cielo brillan' },
-                                { text: '☁️ 7 nubes blancas', isChip: true, isIntruder: true },
-                                { text: 'y entran al agua' },
-                                { text: '🦆 11 patos más', isChip: true, isIntruder: false },
-                                { text: '.<br><span class="text-slate-600 text-xl sm:text-2xl mt-2 block">¿Cuántos patos hay en la laguna?</span>' }
-                            ],
-                            intruderHint: 'La pregunta quiere saber cuántos PATOS hay. ¡Las nubes del cielo son el dato intruso! Tócalas.',
-                            num1: 14,
-                            num2: 11,
-                            op: '+',
-                            ans: 25,
-                            itemName: 'patos',
-                            itemEmoji: '🦆',
-                            opHint: 'Entraron 11 patos MÁS al agua, así que el grupo se hace más grande. ¡Elige SUMAR (+)!',
-                            calcHint: 'Juntamos las decenas (10 + 10 = 20) y las unidades (4 + 1 = 5). ¡Son 25 patos!'
-                        }
-                    ]
-                }
-            ]
-        };
+            // --- NIVELES 8 A 10: MODO DETECTIVE + JEFE FINAL AMIGABLE ---
+            {
+                level: 8,
+                categoryName: '🕵️ Modo Detective',
+                categoryColor: 'bg-amber-100 text-amber-900 border-amber-300',
+                title: 'Nivel 8: Detective en el Árbol Cantante',
+                theme: 'forest-tree',
+                steps: [
+                    {
+                        arcadeType: 'detective-catch',
+                        startCount: 22,
+                        validItems: [
+                            { label: '22 pájaros azules', emoji: '🐦' },
+                            { label: '15 pájaros rojos', emoji: '🐦' }
+                        ],
+                        intruders: [
+                            { label: '🐶 4 perros ladrando', emoji: '🐶' }
+                        ],
+                        prompt: '🕵️ ¡Atrapa al Dato Intruso! Queremos contar PÁJAROS. Toca a los perros en el escenario para quitarlos.',
+                        storyHtml: 'En el árbol hay <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">22 pájaros azules</strong>, <span id="story-intruder-text" class="bg-amber-200 text-amber-950 px-2 py-0.5 rounded-lg font-bold">🐶 4 perros abajo</span>, y llegan <strong class="text-sky-700 bg-sky-100 px-2 py-0.5 rounded-lg">15 pájaros rojos más</strong>. ¿Cuántos pájaros hay?',
+                        speechText: 'Nivel 8, Misión de Detective. En el árbol hay 22 pájaros azules, 4 perros ladrando abajo, y llegan 15 pájaros rojos más. ¿Cuántos pájaros hay en total?',
+                        num1: 22, num2: 15, op: '+', ans: 37,
+                        itemName: 'pájaros', itemEmoji: '🐦',
+                        opHint: 'Ya quitamos a los perros intrusos. Como llegaron 15 pájaros MÁS al árbol, ¡vamos a SUMAR (+)!',
+                        calcHint: '20 + 10 = 30, y 2 + 5 = 7. ¡Hay 37 pájaros en el árbol!'
+                    }
+                ]
+            },
+            {
+                level: 9,
+                categoryName: '🕵️ Modo Detective',
+                categoryColor: 'bg-amber-100 text-amber-900 border-amber-300',
+                title: 'Nivel 9: El Fantasma Travieso del Acuario',
+                theme: 'crystal-cave',
+                steps: [
+                    {
+                        arcadeType: 'detective-catch',
+                        startCount: 38,
+                        validItems: [
+                            { label: '38 peces dorados', emoji: '🐠' },
+                            { label: '14 peces se esconden', emoji: '🪸' }
+                        ],
+                        intruders: [
+                            { label: '👻 6 botas viejas', emoji: '🥾' }
+                        ],
+                        prompt: '🕵️ ¡Hay un dato intruso flotando en el agua! Toca las botas viejas para limpiar el acuario.',
+                        storyHtml: 'Nadaban <strong class="text-teal-700 bg-teal-100 px-2 py-0.5 rounded-lg">38 peces dorados</strong>, había <span id="story-intruder-text" class="bg-amber-200 text-amber-950 px-2 py-0.5 rounded-lg font-bold">🥾 6 botas viejas</span>, y <strong class="text-teal-700 bg-teal-100 px-2 py-0.5 rounded-lg">14 peces se escondieron</strong> en el coral. ¿Cuántos peces se ven?',
+                        speechText: 'Nivel 9. Nadaban 38 peces dorados, había 6 botas viejas, y 14 peces se escondieron en el coral. ¿Cuántos peces se ven ahora?',
+                        num1: 38, num2: 14, op: '-', ans: 24,
+                        itemName: 'peces', itemEmoji: '🐠',
+                        opHint: 'Como 14 peces se escondieron detrás del coral, ahora se ven MENOS peces. ¡Elegimos RESTAR (−)!',
+                        calcHint: 'A 38 le quitamos 10 (28) y luego 4 unidades (8 - 4 = 4). ¡Se ven 24 peces!'
+                    }
+                ]
+            },
+            {
+                level: 10,
+                categoryName: '👑 Gran Final Arcade',
+                categoryColor: 'bg-rose-100 text-rose-900 border-rose-300',
+                title: 'Nivel 10: El Rey Fantasma Come-Datos (Final)',
+                theme: 'pac-lane',
+                steps: [
+                    {
+                        arcadeType: 'detective-catch',
+                        startCount: 40,
+                        validItems: [
+                            { label: '40 estrellas doradas', emoji: '⭐' },
+                            { label: '25 estrellas nuevas', emoji: '🌟' }
+                        ],
+                        intruders: [
+                            { label: '👾 9 ranas saltarinas', emoji: '🐸' },
+                            { label: '👻 3 pizzas voladoras', emoji: '🍕' }
+                        ],
+                        prompt: '👑 ¡GRAN FINAL! El Fantasma Travieso lanzó 2 datos intrusos al laberinto. ¡Toca las ranas y las pizzas!',
+                        storyHtml: 'En la bóveda teníamos <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">40 estrellas</strong>, <span id="story-intruder-text" class="bg-amber-200 text-amber-950 px-2 py-0.5 rounded-lg font-bold">🐸 9 ranas y 🍕 3 pizzas</span>, y ganamos <strong class="text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">25 estrellas más</strong>. ¿Cuántas estrellas tenemos?',
+                        speechText: 'Nivel 10, Gran Final. En la bóveda teníamos 40 estrellas, 9 ranas y 3 pizzas, y ganamos 25 estrellas más. ¿Cuántas estrellas tenemos en total?',
+                        num1: 40, num2: 25, op: '+', ans: 65,
+                        itemName: 'estrellas', itemEmoji: '⭐',
+                        opHint: '¡Limpiaste todos los datos trampa! Como ganamos 25 estrellas MÁS, ¡vamos a SUMAR (+)!',
+                        calcHint: '40 más 20 son 60, más 5 unidades son 65. ¡65 estrellas para coronarte campeón!'
+                    }
+                ]
+            }
+        ];
+
+        /* ==========================================================================
+           TIENDA DE SOMBREROS PARA LEO EL CONEJITO
+           ========================================================================== */
+        const HATS_SHOP = [
+            { id: 'compass', emoji: '🧭', name: 'Brújula', price: 0, owned: true },
+            { id: 'crown', emoji: '👑', name: 'Corona Rey', price: 3, owned: false },
+            { id: 'astronaut', emoji: '🪐', name: 'Halo Galáctico', price: 5, owned: false },
+            { id: 'detective', emoji: '🕵️', name: 'Detective', price: 6, owned: false },
+            { id: 'wizard', emoji: '🧙', name: 'Mago Sabio', price: 8, owned: false },
+            { id: 'super', emoji: '🚀', name: 'Cohete Pro', price: 10, owned: false }
+        ];
 
         /* ==========================================================================
            ESTADO GLOBAL DEL JUEGO
            ========================================================================== */
         let state = {
-            category: 1,          // 1: Básico, 2: Dos Pasos, 3: Detective
-            missionIdx: 0,        // Índice de la misión dentro de la categoría (0..2)
-            stepIdx: 0,           // Paso dentro de la misión (0 o 1 para nivel 2)
-            phase: 'OPERATION',   // 'DETECTIVE' | 'OPERATION' | 'CALCULATE' | 'NEXT'
-            typedNumber: '',      // Número escrito en el teclado táctil
-            stars: 0,             // Contador total de estrellas
-            soundEnabled: true,   // Audio suave Web Audio API
-            intruderCleared: false
+            levelIdx: 0,          // 0 a 9 (Niveles 1 al 10)
+            stepIdx: 0,           // Paso dentro del nivel (0 o 1)
+            phase: 'ARCADE',      // 'ARCADE' | 'OPERATION' | 'CALCULATE' | 'NEXT'
+            typedNumber: '',
+            stars: 2,             // Empieza con 2 estrellas de bienvenida
+            soundEnabled: true,
+            completedLevels: {},  // Registro de niveles superados
+            equippedHat: '🧭',
+            remainingStageItems: 0,
+            currentDisplayCount: 0
         };
 
         /* ==========================================================================
-           SISTEMA DE AUDIO AMIGABLE (Web Audio API - Cero sonidos bruscos)
+           MOTOR DE SONIDO WEB AUDIO API + VOZ (SPEECH SYNTHESIS)
            ========================================================================== */
         let audioCtx = null;
 
@@ -667,103 +844,131 @@
             }
         }
 
-        function playGentleSound(type) {
+        function playSound(type) {
             if (!state.soundEnabled) return;
             try {
                 initAudio();
                 if (!audioCtx) return;
-
                 const now = audioCtx.currentTime;
 
-                if (type === 'tap') {
-                    // Pop suave de burbuja
+                if (type === 'waka') {
+                    // Efecto "Waka-Waka" arcade amigable al comer fichas
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.linearRampToValueAtTime(620, now + 0.09);
+                    osc.frequency.linearRampToValueAtTime(360, now + 0.18);
+                    gain.gain.setValueAtTime(0.14, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.19);
+                } 
+                else if (type === 'tap') {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(380, now);
-                    osc.frequency.exponentialRampToValueAtTime(520, now + 0.06);
-                    gain.gain.setValueAtTime(0.08, now);
+                    osc.frequency.setValueAtTime(420, now);
+                    osc.frequency.exponentialRampToValueAtTime(580, now + 0.06);
+                    gain.gain.setValueAtTime(0.09, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start(now);
                     osc.stop(now + 0.06);
-                } 
+                }
                 else if (type === 'poof') {
-                    // Sonido mágico ascendente al limpiar el intruso
-                    const notes = [440, 554.37, 659.25, 880];
-                    notes.forEach((freq, idx) => {
+                    // Sonido cómico al atrapar un dato intruso
+                    const freqs = [350, 480, 640, 880];
+                    freqs.forEach((f, idx) => {
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.055);
-                        gain.gain.setValueAtTime(0.1, now + idx * 0.055);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.055 + 0.18);
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(f, now + idx * 0.045);
+                        gain.gain.setValueAtTime(0.11, now + idx * 0.045);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.15);
                         osc.connect(gain);
                         gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.055);
-                        osc.stop(now + idx * 0.055 + 0.18);
+                        osc.start(now + idx * 0.045);
+                        osc.stop(now + idx * 0.045 + 0.15);
                     });
                 }
                 else if (type === 'step_ok') {
-                    // Acorde alegre corto (Do - Mi - Sol)
                     const notes = [523.25, 659.25, 783.99];
                     notes.forEach((freq, idx) => {
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-                        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                        gain.gain.setValueAtTime(0.13, now + idx * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.24);
                         osc.connect(gain);
                         gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.08);
-                        osc.stop(now + idx * 0.08 + 0.25);
+                        osc.start(now + idx * 0.07);
+                        osc.stop(now + idx * 0.07 + 0.24);
                     });
                 }
                 else if (type === 'win') {
-                    // Fanfarria suave de victoria
-                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.50];
                     notes.forEach((freq, idx) => {
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                        gain.gain.setValueAtTime(0.14, now + idx * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.085);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.085);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.085 + 0.35);
                         osc.connect(gain);
                         gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.1);
-                        osc.stop(now + idx * 0.1 + 0.35);
+                        osc.start(now + idx * 0.085);
+                        osc.stop(now + idx * 0.085 + 0.35);
                     });
                 }
                 else if (type === 'hint') {
-                    // Campanita cálida de orientación (NUNCA un timbre de error)
+                    // Rebote suave y cálido cuando pide pista
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, now);
-                    osc.frequency.setValueAtTime(493.88, now + 0.12);
+                    osc.frequency.setValueAtTime(392, now);
+                    osc.frequency.setValueAtTime(440, now + 0.11);
                     gain.gain.setValueAtTime(0.08, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start(now);
-                    osc.stop(now + 0.32);
+                    osc.stop(now + 0.28);
                 }
-            } catch (e) {
-                // Ignorar si el navegador bloquea audio antes de interacción
+            } catch (e) {}
+        }
+
+        function speakCurrentMission() {
+            playSound('tap');
+            if (!('speechSynthesis' in window)) {
+                setBunnySpeech('¡Lee la historia en pantalla! Tu navegador no tiene lector de voz.');
+                return;
             }
+            window.speechSynthesis.cancel();
+            const step = getCurrentStep();
+            const utter = new SpeechSynthesisUtterance(step.speechText);
+            utter.lang = 'es-ES';
+            utter.rate = 0.95;
+            utter.pitch = 1.1;
+            window.speechSynthesis.speak(utter);
         }
 
         function toggleSound() {
             state.soundEnabled = !state.soundEnabled;
             document.getElementById('sound-btn').textContent = state.soundEnabled ? '🔊' : '🔇';
-            if (state.soundEnabled) playGentleSound('tap');
+            if (!state.soundEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            } else {
+                playSound('tap');
+            }
         }
 
         /* ==========================================================================
-           SISTEMA DE MICRO-RECOMPENSAS Y CONFETI EN CANVAS
+           CONFETI Y MICRO-RECOMPENSAS
            ========================================================================== */
         const confettiCanvas = document.getElementById('confetti-canvas');
         const ctx = confettiCanvas.getContext('2d');
@@ -777,19 +982,19 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        function fireConfetti(particleCount = 45) {
+        function fireConfetti(count = 45) {
             const colors = ['#22C55E', '#3B82F6', '#F59E0B', '#EC4899', '#A855F7', '#FACC15'];
-            for (let i = 0; i < particleCount; i++) {
+            for (let i = 0; i < count; i++) {
                 particles.push({
-                    x: window.innerWidth / 2 + (Math.random() - 0.5) * 180,
-                    y: window.innerHeight * 0.55,
-                    vx: (Math.random() - 0.5) * 15,
-                    vy: -(Math.random() * 12 + 6),
+                    x: window.innerWidth / 2 + (Math.random() - 0.5) * 240,
+                    y: window.innerHeight * 0.5,
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: -(Math.random() * 13 + 5),
                     size: Math.random() * 9 + 6,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     rotation: Math.random() * 360,
-                    vRot: (Math.random() - 0.5) * 10,
-                    gravity: 0.35,
+                    vRot: (Math.random() - 0.5) * 12,
+                    gravity: 0.36,
                     opacity: 1
                 });
             }
@@ -803,9 +1008,7 @@
                 p.y += p.vy;
                 p.vy += p.gravity;
                 p.rotation += p.vRot;
-                if (p.y > confettiCanvas.height * 0.75) {
-                    p.opacity -= 0.03;
-                }
+                if (p.y > confettiCanvas.height * 0.75) p.opacity -= 0.03;
                 ctx.save();
                 ctx.globalAlpha = Math.max(0, p.opacity);
                 ctx.translate(p.x, p.y);
@@ -814,7 +1017,7 @@
                 ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
                 ctx.restore();
             });
-            particles = particles.filter(p => p.opacity > 0 && p.y < confettiCanvas.height + 40);
+            particles = particles.filter(p => p.opacity > 0 && p.y < confettiCanvas.height + 30);
             if (particles.length > 0) {
                 animFrameId = requestAnimationFrame(renderConfetti);
             } else {
@@ -823,223 +1026,324 @@
             }
         }
 
-        function awardStars(amount, speechMessage) {
+        function awardStars(amount, message) {
             state.stars += amount;
-            const starEl = document.getElementById('star-count');
-            const badgeEl = document.getElementById('star-badge');
-            starEl.textContent = state.stars;
-            badgeEl.classList.add('scale-125', 'bg-amber-200');
-            setTimeout(() => badgeEl.classList.remove('scale-125', 'bg-amber-200'), 350);
+            document.getElementById('star-count').textContent = state.stars;
+            document.getElementById('shop-star-count').textContent = state.stars;
 
-            // Animación alegre de Leo el Conejito
-            const bunny = document.getElementById('bunny-avatar');
-            bunny.classList.remove('bunny-hop');
-            void bunny.offsetWidth;
-            bunny.classList.add('bunny-hop');
+            const badge = document.getElementById('star-badge');
+            badge.classList.add('scale-125', 'bg-amber-200');
+            setTimeout(() => badge.classList.remove('scale-125', 'bg-amber-200'), 350);
 
-            if (speechMessage) {
-                setBunnySpeech(speechMessage);
-            }
+            if (message) setBunnySpeech(message);
         }
 
         function setBunnySpeech(text) {
-            const speechEl = document.getElementById('bunny-speech');
-            speechEl.textContent = text;
+            document.getElementById('bunny-speech').textContent = text;
+        }
+
+        function petBunny() {
+            playSound('waka');
+            const bunny = document.getElementById('bunny-avatar');
+            bunny.classList.remove('animate-waka');
+            void bunny.offsetWidth;
+            bunny.classList.add('animate-waka');
+            setBunnySpeech('¡Waka-waka! ¡Estoy listo para explorar contigo!');
         }
 
         /* ==========================================================================
-           CONTROL DE NAVEGACIÓN Y CARGA DE MISIONES
+           GESTIÓN DE NIVELES (1 AL 10) Y ESCENARIO INTERACTIVO ARCADE
            ========================================================================== */
-        function getCurrentMission() {
-            return MISSIONS_DB[state.category][state.missionIdx];
+        function getCurrentLevel() {
+            return LEVELS[state.levelIdx];
         }
 
         function getCurrentStep() {
-            const mission = getCurrentMission();
-            return mission.steps[state.stepIdx];
+            return getCurrentLevel().steps[state.stepIdx];
         }
 
-        function switchCategory(catNumber) {
-            playGentleSound('tap');
-            state.category = catNumber;
-            state.missionIdx = 0;
+        function selectLevel(idx) {
+            playSound('tap');
+            state.levelIdx = idx;
             state.stepIdx = 0;
-            updateCategoryTabsUI();
+            closeModal('map-modal');
             loadCurrentStep();
         }
 
-        function updateCategoryTabsUI() {
-            const styles = {
-                1: 'bg-emerald-500 text-white shadow-sm',
-                2: 'bg-purple-600 text-white shadow-sm',
-                3: 'bg-amber-500 text-white shadow-sm'
-            };
-            [1, 2, 3].forEach(c => {
-                const btn = document.getElementById(`tab-cat-${c}`);
-                if (c === state.category) {
-                    btn.className = `px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 ${styles[c]}`;
-                } else {
-                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center gap-1.5 text-slate-600 hover:bg-white/60';
-                }
-            });
-        }
-
         function loadCurrentStep() {
-            const mission = getCurrentMission();
+            const lvl = getCurrentLevel();
             const step = getCurrentStep();
 
             state.typedNumber = '';
-            state.intruderCleared = !step.isDetective;
             hideVisualHelp();
 
-            // Título de misión
-            document.getElementById('mission-title').textContent = mission.title;
+            // Cabeceras y etiquetas
+            document.getElementById('mission-title').textContent = `🕹️ ${lvl.title}`;
+            document.getElementById('level-indicator').textContent = `Nivel ${lvl.level} de ${LEVELS.length}`;
 
-            // Badge de Dos Pasos si aplica
+            const catPill = document.getElementById('category-pill');
+            catPill.textContent = lvl.categoryName;
+            catPill.className = `hidden sm:inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-xl border ${lvl.categoryColor}`;
+
             const stepBadge = document.getElementById('step-badge');
-            if (mission.steps.length > 1) {
+            if (lvl.steps.length > 1) {
                 stepBadge.classList.remove('hidden');
-                stepBadge.textContent = `Paso ${state.stepIdx + 1} de ${mission.steps.length}`;
+                stepBadge.textContent = `Paso ${state.stepIdx + 1} de ${lvl.steps.length}`;
             } else {
                 stepBadge.classList.add('hidden');
             }
 
-            // Renderizar historia (Normal o con Chips de Detective)
-            renderStoryContent(step);
+            // Mostrar historia
+            document.getElementById('story-container').innerHTML = step.storyHtml;
 
-            // Determinar fase inicial del paso
-            if (step.isDetective && !state.intruderCleared) {
-                state.phase = 'DETECTIVE';
-                setBunnySpeech('¡Misión de Detective! Antes de calcular, toca el dato intruso que NO nos sirve.');
-            } else {
-                state.phase = 'OPERATION';
-                if (state.stepIdx === 1) {
-                    setBunnySpeech('¡Primer paso listo! Ahora lee la segunda parte y elige si sumamos o restamos.');
-                } else {
-                    setBunnySpeech('¡Lee con calma! Primero, ¿tenemos que SUMAR o RESTAR?');
-                }
-            }
+            // Construir el Escenario Arcade Interactivo
+            buildArcadeStage(lvl, step);
+
+            // Iniciar en la fase interactiva del escenario
+            state.phase = 'ARCADE';
+            document.getElementById('arcade-prompt-text').textContent = step.prompt;
+            setBunnySpeech(step.prompt);
 
             updatePhaseVisibility();
-            updateProgressBar();
-            renderMissionDots();
+            renderTopLevelStrip();
         }
 
-        function renderStoryContent(step) {
-            const container = document.getElementById('story-container');
-            if (!step.isDetective) {
-                container.innerHTML = step.storyHtml;
-                return;
+        function buildArcadeStage(lvl, step) {
+            const stage = document.getElementById('arcade-stage');
+            const playfield = document.getElementById('stage-playfield');
+            const wallTop = document.getElementById('pac-wall-top');
+            const wallBot = document.getElementById('pac-wall-bottom');
+
+            // Ajustar estilo visual según el tema del nivel
+            stage.className = 'arcade-stage min-h-[155px] sm:min-h-[175px] flex flex-col justify-between relative select-none ';
+            wallTop.classList.add('hidden');
+            wallBot.classList.add('hidden');
+
+            if (lvl.theme === 'pac-lane') {
+                stage.classList.add('stage-pac-lane');
+                wallTop.classList.remove('hidden');
+                wallBot.classList.remove('hidden');
+            } else if (lvl.theme === 'space-bus') {
+                stage.classList.add('bg-gradient-to-r', 'from-slate-900', 'via-indigo-950', 'to-slate-900', 'border-indigo-400');
+            } else if (lvl.theme === 'forest-tree' || lvl.theme === 'forest-shop') {
+                stage.classList.add('bg-gradient-to-b', 'from-emerald-900', 'to-teal-950', 'border-emerald-400');
+            } else {
+                stage.classList.add('bg-gradient-to-r', 'from-sky-900', ' via-cyan-950', 'to-blue-950', 'border-cyan-400');
             }
 
-            // Si es modo Detective, creamos los chips interactivos
-            container.innerHTML = '';
-            step.segments.forEach((seg, idx) => {
-                if (!seg.isChip) {
-                    const span = document.createElement('span');
-                    span.innerHTML = ' ' + seg.text + ' ';
-                    container.appendChild(span);
-                } else {
-                    const chip = document.createElement('button');
-                    chip.type = 'button';
-                    chip.id = `detective-chip-${idx}`;
-                    chip.className = `story-chip ${!state.intruderCleared ? 'detective-active' : ''}`;
-                    chip.innerHTML = `<span>${seg.text}</span>`;
-                    chip.onclick = () => handleDetectiveChipClick(seg, chip, step);
-                    container.appendChild(chip);
+            playfield.innerHTML = '';
+            state.currentDisplayCount = step.startCount;
+            updateStageCounterUI(step.itemEmoji, `${step.itemName}: ${state.currentDisplayCount}`);
+            document.getElementById('stage-instruction-pill').textContent = '👆 ¡Toca los objetos brillantes!';
+            document.getElementById('stage-instruction-pill').className = 'bg-amber-400 text-slate-950 px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold shadow animate-pulse';
+
+            // 1. Personaje Leo dentro del escenario Arcade
+            const heroWrap = document.createElement('div');
+            heroWrap.id = 'stage-hero';
+            heroWrap.className = 'flex flex-col items-center transition-all duration-300 z-10';
+            heroWrap.innerHTML = `
+                <div class="relative bg-white/15 backdrop-blur-xs border-2 border-white/40 rounded-2xl px-3 py-1.5 flex items-center gap-1.5 shadow-lg">
+                    <span class="text-3xl sm:text-4xl">${state.equippedHat}🐰</span>
+                    <span id="stage-hero-badge" class="bg-amber-400 text-slate-950 font-extrabold text-sm sm:text-base px-2 py-0.5 rounded-xl">${step.startCount} ${step.itemEmoji}</span>
+                </div>
+            `;
+            playfield.appendChild(heroWrap);
+
+            // 2. Renderizar tokens interactivos o modo Detective
+            if (step.arcadeType === 'detective-catch') {
+                state.remainingStageItems = step.intruders.length;
+
+                // Mostrar elementos válidos (no se borran)
+                step.validItems.forEach(v => {
+                    const validBadge = document.createElement('div');
+                    validBadge.className = 'bg-emerald-500/20 border-2 border-emerald-400 text-white px-3 py-2 rounded-2xl font-bold text-xs sm:text-sm flex flex-col items-center gap-1';
+                    validBadge.innerHTML = `<span class="text-2xl sm:text-3xl">${v.emoji}</span><span>${v.label}</span>`;
+                    validBadge.onclick = () => {
+                        playSound('hint');
+                        setBunnySpeech(`¡Esos ${v.label} SÍ nos sirven para la pregunta! Busca el dato intruso que no tiene nada que ver.`);
+                    };
+                    playfield.appendChild(validBadge);
+                });
+
+                // Mostrar Intrusos flotando (estilo fantasmita travieso)
+                step.intruders.forEach((intruder) => {
+                    const intrBtn = document.createElement('button');
+                    intrBtn.type = 'button';
+                    intrBtn.className = 'intruder-float bg-rose-500 hover:bg-rose-400 border-4 border-amber-300 text-white px-3.5 py-2 rounded-2xl font-bold text-xs sm:text-sm flex flex-col items-center gap-0.5 shadow-xl cursor-pointer';
+                    intrBtn.innerHTML = `
+                        <span class="text-xs bg-amber-300 text-slate-950 px-2 rounded-full font-extrabold">¡INTRUSO!</span>
+                        <span class="text-2xl sm:text-3xl">${intruder.emoji}</span>
+                        <span>${intruder.label}</span>
+                    `;
+                    intrBtn.onclick = () => handleStageIntruderClick(intrBtn, step);
+                    playfield.appendChild(intrBtn);
+                });
+
+            } else {
+                // Modo Arcade Manipulativo (Come-Semillas, Autobús, Burbujas, Tienda)
+                state.remainingStageItems = step.tokens.length;
+
+                // Carril de puntos estilo Pac-Man entre Leo y las fichas
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'flex items-center justify-around flex-1 px-2 gap-2';
+
+                step.tokens.forEach((tok) => {
+                    const isAdd = step.op === '+';
+                    const tokBtn = document.createElement('button');
+                    tokBtn.type = 'button';
+                    tokBtn.className = `arcade-token ${
+                        isAdd 
+                            ? 'bg-emerald-500 hover:bg-emerald-400 border-4 border-amber-300' 
+                            : 'bg-sky-500 hover:bg-sky-400 border-4 border-amber-300'
+                    } text-white px-3.5 py-2.5 rounded-2xl font-extrabold text-sm sm:text-base flex flex-col items-center shadow-lg`;
+
+                    tokBtn.innerHTML = `
+                        <span class="text-2xl sm:text-3xl">${tok.emoji}</span>
+                        <span class="bg-slate-900/60 px-2 py-0.5 rounded-lg mt-0.5">${tok.label}</span>
+                    `;
+                    tokBtn.onclick = () => handleStageTokenClick(tokBtn, tok, step);
+                    dotsContainer.appendChild(tokBtn);
+                });
+
+                playfield.appendChild(dotsContainer);
+            }
+        }
+
+        function handleStageTokenClick(btnEl, token, step) {
+            if (state.phase !== 'ARCADE') return;
+
+            playSound('waka');
+            btnEl.classList.add('animate-poof');
+
+            // Animar a Leo acercándose / comiendo
+            const hero = document.getElementById('stage-hero');
+            if (hero) {
+                hero.classList.remove('animate-waka');
+                void hero.offsetWidth;
+                hero.classList.add('animate-waka');
+            }
+
+            // Actualizar contador visual de acompañamiento
+            if (step.op === '+') {
+                state.currentDisplayCount += token.value;
+            } else {
+                state.currentDisplayCount -= token.value;
+            }
+            const heroBadge = document.getElementById('stage-hero-badge');
+            if (heroBadge) heroBadge.textContent = `${token.emoji}`;
+            updateStageCounterUI(step.itemEmoji, `¡Acción en marcha!`);
+
+            state.remainingStageItems--;
+            if (state.remainingStageItems <= 0) {
+                completeArcadeActionPhase(step);
+            }
+        }
+
+        function handleStageIntruderClick(btnEl, step) {
+            if (state.phase !== 'ARCADE') return;
+
+            playSound('poof');
+            btnEl.classList.add('animate-poof');
+            fireConfetti(22);
+
+            state.remainingStageItems--;
+            if (state.remainingStageItems <= 0) {
+                // Tachar el dato intruso también en el texto de la historia
+                const intrText = document.getElementById('story-intruder-text');
+                if (intrText) {
+                    intrText.classList.add('line-through', 'opacity-40');
                 }
-            });
+                awardStars(1, '¡Puf! Atrapaste al dato intruso. Ahora el problema está limpio: ¿sumamos o restamos?');
+                completeArcadeActionPhase(step);
+            }
+        }
+
+        function completeArcadeActionPhase(step) {
+            const pill = document.getElementById('stage-instruction-pill');
+            pill.textContent = '✓ ¡Escenario completado!';
+            pill.className = 'bg-emerald-400 text-slate-950 px-3 py-0.5 rounded-full text-xs sm:text-sm font-bold shadow';
+            updateStageCounterUI(step.itemEmoji, `${step.num1} y ${step.num2} ${step.itemName}`);
+
+            setTimeout(() => {
+                state.phase = 'OPERATION';
+                setBunnySpeech('¡Genial! Viste lo que pasó en el escenario. Ahora dime: ¿tenemos que SUMAR o RESTAR?');
+                updatePhaseVisibility();
+            }, 420);
+        }
+
+        function updateStageCounterUI(emoji, text) {
+            document.getElementById('stage-counter-emoji').textContent = emoji;
+            document.getElementById('stage-counter-text').textContent = text;
         }
 
         /* ==========================================================================
-           LÓGICA DE LAS 3 FASES COGNITIVAS (Detective -> Signo -> Cálculo)
+           FASE 1 (ELECCIÓN DE SIGNO) Y FASE 2 (CÁLCULO CON TECLADO Y BURBUJAS)
            ========================================================================== */
-
-        // FASE 0: MODO DETECTIVE (Eliminar el dato irrelevante)
-        function handleDetectiveChipClick(segment, chipEl, step) {
-            if (state.phase !== 'DETECTIVE') return;
-
-            if (segment.isIntruder) {
-                // ¡Acertó el intruso!
-                playGentleSound('poof');
-                chipEl.innerHTML = `<span>💨 ¡Puf! Dato intruso fuera</span>`;
-                chipEl.classList.add('animate-poof');
-                state.intruderCleared = true;
-
-                // Desactivar bordes de detective de los otros chips válidos
-                document.querySelectorAll('.story-chip').forEach(el => {
-                    el.classList.remove('detective-active');
-                    el.style.borderStyle = 'solid';
-                    el.style.borderColor = '#10B981';
-                    el.style.backgroundColor = '#ECFDF5';
-                });
-
-                fireConfetti(30);
-                awardStars(1, '¡Gran ojo de detective! Limpiaste el problema. Ahora, ¿sumamos o restamos?');
-
-                setTimeout(() => {
-                    state.phase = 'OPERATION';
-                    updatePhaseVisibility();
-                    updateProgressBar();
-                }, 550);
-            } else {
-                // Tocó un dato que SÍ es necesario para el problema
-                playGentleSound('hint');
-                setBunnySpeech(step.intruderHint);
-                chipEl.classList.add('ring-4', 'ring-sky-300');
-                setTimeout(() => chipEl.classList.remove('ring-4', 'ring-sky-300'), 700);
-            }
-        }
-
-        // FASE 1: ELECCIÓN DE SIGNO (+ o -)
         function handleOperationChoice(chosenOp) {
             const step = getCurrentStep();
             if (chosenOp === step.op) {
-                // ¡Acertó la operación! Micro-recompensa y pasa al teclado numérico
-                playGentleSound('step_ok');
-                fireConfetti(28);
+                playSound('step_ok');
+                fireConfetti(25);
                 hideVisualHelp();
 
-                const opWord = chosenOp === '+' ? 'SUMAR (+)' : 'RESTAR (−)';
-                awardStars(1, `¡Exacto, vamos a ${opWord}! Ahora usa los números para escribir el resultado.`);
+                const opName = chosenOp === '+' ? 'SUMAR (+)' : 'RESTAR (−)';
+                awardStars(1, `¡Muy bien, toca ${opName}! Ahora elige una burbuja o escribe el resultado en el teclado.`);
 
                 state.phase = 'CALCULATE';
                 state.typedNumber = '';
-                setupEquationDisplay(step);
+                setupCalculateUI(step);
                 updatePhaseVisibility();
-                updateProgressBar();
             } else {
-                // Se equivocó de signo -> Cero castigo, mostramos ayuda visual constructiva
-                playGentleSound('hint');
+                // Cero estrés: mostramos pista visual con bloques y recta numérica
+                playSound('hint');
                 setBunnySpeech(step.opHint);
                 showVisualHelp(true);
             }
         }
 
-        function setupEquationDisplay(step) {
+        function setupCalculateUI(step) {
             document.getElementById('eq-num1').textContent = step.num1;
             document.getElementById('eq-num2').textContent = step.num2;
             const signEl = document.getElementById('eq-sign');
             signEl.textContent = step.op === '+' ? '+' : '−';
-            if (step.op === '+') {
-                signEl.className = 'text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white';
-            } else {
-                signEl.className = 'text-3xl sm:text-4xl font-bold px-3 py-0.5 rounded-xl bg-blue-500 text-white';
-            }
+            signEl.className = step.op === '+'
+                ? 'text-2xl sm:text-3xl font-bold px-3 py-0.5 rounded-xl bg-emerald-500 text-white'
+                : 'text-2xl sm:text-3xl font-bold px-3 py-0.5 rounded-xl bg-blue-500 text-white';
+
             updateAnswerBoxUI();
+
+            // Generar 3 burbujas rápidas (la respuesta correcta + 2 distractores amables)
+            const bubblesContainer = document.getElementById('quick-bubbles');
+            bubblesContainer.innerHTML = '';
+            const options = new Set([step.ans]);
+            while (options.size < 3) {
+                const offset = [2, -2, 10, -10, 4, -3][Math.floor(Math.random() * 6)];
+                const candidate = step.ans + offset;
+                if (candidate > 0 && candidate !== step.ans) options.add(candidate);
+            }
+            Array.from(options).sort((a, b) => a - b).forEach(opt => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'btn-3d bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-300 text-indigo-950 font-bold px-4 py-1.5 rounded-2xl text-lg sm:text-xl shadow-xs';
+                b.textContent = `🫧 ${opt}`;
+                b.onclick = () => {
+                    playSound('tap');
+                    state.typedNumber = String(opt);
+                    updateAnswerBoxUI();
+                    submitNumber();
+                };
+                bubblesContainer.appendChild(b);
+            });
         }
 
-        // FASE 2: TECLADO NUMÉRICO Y COMPROBACIÓN DE CÁLCULO
         function pressKey(key) {
             if (state.phase !== 'CALCULATE') return;
-            playGentleSound('tap');
+            playSound('tap');
 
             if (key === 'DEL') {
                 state.typedNumber = state.typedNumber.slice(0, -1);
-            } else {
-                if (state.typedNumber.length < 3) {
-                    state.typedNumber += key;
-                }
+            } else if (state.typedNumber.length < 3) {
+                state.typedNumber += key;
             }
             updateAnswerBoxUI();
         }
@@ -1057,57 +1361,52 @@
             }
         }
 
-        // Soporte para teclado físico además del táctil
         window.addEventListener('keydown', (e) => {
             if (state.phase !== 'CALCULATE') return;
-            if (e.key >= '0' && e.key <= '9') {
-                pressKey(e.key);
-            } else if (e.key === 'Backspace') {
-                pressKey('DEL');
-            } else if (e.key === 'Enter') {
-                submitNumber();
-            }
+            if (e.key >= '0' && e.key <= '9') pressKey(e.key);
+            else if (e.key === 'Backspace') pressKey('DEL');
+            else if (e.key === 'Enter') submitNumber();
         });
 
         function submitNumber() {
             if (state.phase !== 'CALCULATE') return;
             if (state.typedNumber === '') {
-                playGentleSound('hint');
-                setBunnySpeech('Escribe un número usando los botones de abajo antes de darle a ¡Listo!');
+                playSound('hint');
+                setBunnySpeech('Toca una burbuja o escribe un número con el teclado antes de comprobar.');
                 return;
             }
 
+            const lvl = getCurrentLevel();
             const step = getCurrentStep();
             const userVal = parseInt(state.typedNumber, 10);
 
             if (userVal === step.ans) {
-                // ¡Respuesta Correcta!
-                playGentleSound('win');
-                fireConfetti(65);
+                playSound('win');
+                fireConfetti(70);
                 hideVisualHelp();
+                updateStageCounterUI(step.itemEmoji, `¡Total: ${step.ans} ${step.itemName}!`);
 
-                const mission = getCurrentMission();
-                const isFirstOfTwoSteps = (mission.steps.length > 1 && state.stepIdx === 0);
+                const isFirstOfTwoSteps = (lvl.steps.length > 1 && state.stepIdx === 0);
 
                 if (isFirstOfTwoSteps) {
-                    awardStars(2, `¡Súper! ${step.num1} ${step.op} ${step.num2} son ${step.ans}. ¡Vamos a la segunda parte de esta historia!`);
-                    document.getElementById('success-title').textContent = `¡Primera parte lista! (${step.ans} ${step.itemEmoji})`;
-                    document.getElementById('success-desc').textContent = `Ahora usemos esos ${step.ans} ${step.itemName} para terminar la misión.`;
-                    document.getElementById('next-action-text').textContent = 'Ir al Paso 2';
+                    awardStars(2, `¡Excelente! ${step.num1} ${step.op} ${step.num2} = ${step.ans}. ¡Ahora vamos al Paso 2 de esta misión!`);
+                    document.getElementById('success-title').textContent = `¡Paso 1 Completado: ${step.ans} ${step.itemEmoji}!`;
+                    document.getElementById('success-desc').textContent = `Guarda ese ${step.ans}, lo usaremos enseguida en la segunda parte.`;
+                    document.getElementById('next-action-text').textContent = 'Continuar al Paso 2';
                 } else {
-                    awardStars(3, `¡Increíble! El resultado es ${step.ans} ${step.itemName}. ¡Ganaste 3 estrellas brillantes!`);
-                    document.getElementById('success-title').textContent = `¡Respuesta Exacta: ${step.ans} ${step.itemEmoji}!`;
-                    document.getElementById('success-desc').textContent = 'Completaste toda la misión con mucha concentración.';
-                    document.getElementById('next-action-text').textContent = 'Siguiente Misión';
+                    state.completedLevels[lvl.level] = true;
+                    awardStars(3, `¡Victoria en el Nivel ${lvl.level}! La respuesta es ${step.ans} ${step.itemName}. ¡Ganaste 3 estrellas!`);
+                    document.getElementById('success-title').textContent = `¡Misión ${lvl.level} Superada! (${step.ans} ${step.itemEmoji})`;
+                    document.getElementById('success-desc').textContent = '¡Mira cuántas estrellas tienes! Puedes visitar la tienda de sombreros de Leo.';
+                    document.getElementById('next-action-text').textContent = state.levelIdx < LEVELS.length - 1 ? `Ir al Nivel ${lvl.level + 1}` : '¡Ver Trofeo Final!';
                 }
 
                 state.phase = 'NEXT';
                 updatePhaseVisibility();
-                updateProgressBar();
+                renderTopLevelStrip();
             } else {
-                // Error constructivo: mostramos los bloques manipulativos y limpiamos para que reintente sin estrés
-                playGentleSound('hint');
-                setBunnySpeech(`Casi, pusiste ${userVal}. ¡Mira los bloques de ayuda para contar juntos!`);
+                playSound('hint');
+                setBunnySpeech(`Pusiste ${userVal}. ¡Mirémoslo juntos con los bloques de decenas y la recta de saltos!`);
                 showVisualHelp(false);
                 state.typedNumber = '';
                 updateAnswerBoxUI();
@@ -1115,72 +1414,50 @@
         }
 
         function advanceGame() {
-            playGentleSound('tap');
-            const mission = getCurrentMission();
+            playSound('tap');
+            const lvl = getCurrentLevel();
 
-            // Si estamos en una misión de 2 pasos y acabamos el paso 0, pasamos al paso 1
-            if (mission.steps.length > 1 && state.stepIdx === 0) {
+            if (lvl.steps.length > 1 && state.stepIdx === 0) {
                 state.stepIdx = 1;
                 loadCurrentStep();
                 return;
             }
 
-            // Si terminamos la misión, avanzamos a la siguiente misión o siguiente nivel
             state.stepIdx = 0;
-            if (state.missionIdx + 1 < MISSIONS_DB[state.category].length) {
-                state.missionIdx++;
+            if (state.levelIdx + 1 < LEVELS.length) {
+                state.levelIdx++;
                 loadCurrentStep();
             } else {
-                // Pasamos al siguiente nivel automáticamente o volvemos al 1 con celebración
-                if (state.category < 3) {
-                    state.category++;
-                    state.missionIdx = 0;
-                    updateCategoryTabsUI();
-                    loadCurrentStep();
-                    setBunnySpeech(`¡Subiste al Nivel ${state.category}! Nuevas aventuras nos esperan.`);
-                } else {
-                    state.category = 1;
-                    state.missionIdx = 0;
-                    updateCategoryTabsUI();
-                    loadCurrentStep();
-                    fireConfetti(90);
-                    setBunnySpeech('¡Completaste todas las misiones del juego! Eres un maestro explorador.');
-                }
+                fireConfetti(110);
+                openModal('shop-modal');
+                setBunnySpeech('¡Completaste los 10 Niveles del Mundo Arcade! ¡Eres un Súper Explorador Matemático!');
             }
         }
 
         /* ==========================================================================
-           SISTEMA DE AYUDA VISUAL CON BLOQUES (DECENAS Y UNIDADES)
+           AYUDA VISUAL: RECTA NUMÉRICA DE SALTOS + BLOQUES BASE 10
            ========================================================================== */
         function createBlocksHTML(number, crossedCount = 0) {
             const tens = Math.floor(number / 10);
             const units = number % 10;
-
             const crossedTens = Math.floor(crossedCount / 10);
             const crossedUnits = crossedCount % 10;
 
             let html = '<div class="flex flex-wrap items-end justify-center gap-1.5">';
-
-            // Dibujar barras de 10 (Decenas)
             for (let t = 0; t < tens; t++) {
                 const isCrossed = t >= (tens - crossedTens);
                 html += `<div class="ten-rod ${isCrossed ? 'crossed-out' : ''}" title="1 Decena (10)">`;
-                for (let u = 0; u < 10; u++) {
-                    html += '<div class="ten-rod-unit"></div>';
-                }
+                for (let u = 0; u < 10; u++) html += '<div class="ten-rod-unit"></div>';
                 html += '</div>';
             }
-
-            // Dibujar cubos sueltos (Unidades)
             if (units > 0) {
-                html += '<div class="flex flex-wrap max-w-[125px] items-center justify-center p-1">';
+                html += '<div class="flex flex-wrap max-w-[115px] items-center justify-center p-1">';
                 for (let u = 0; u < units; u++) {
                     const isCrossed = u >= (units - crossedUnits);
                     html += `<div class="unit-cube ${isCrossed ? 'crossed-out' : ''}" title="1 Unidad (1)"></div>`;
                 }
                 html += '</div>';
             }
-
             html += '</div>';
             return html;
         }
@@ -1189,32 +1466,41 @@
             const step = getCurrentStep();
             const panel = document.getElementById('visual-help-panel');
             const explanation = document.getElementById('help-explanation');
+            const numberline = document.getElementById('help-numberline');
             const blocksArea = document.getElementById('help-blocks-area');
 
             panel.classList.remove('hidden');
+            explanation.textContent = isOperationHintOnly ? step.opHint : `${step.opHint} ${step.calcHint}`;
 
-            if (isOperationHintOnly) {
-                explanation.textContent = step.opHint;
-            } else {
-                explanation.textContent = `${step.opHint} ${step.calcHint}`;
-            }
+            // Recta numérica visual de saltos
+            const tensJump = Math.floor(step.num2 / 10) * 10;
+            const unitsJump = step.num2 % 10;
+            const midVal = step.op === '+' ? step.num1 + tensJump : step.num1 - tensJump;
+
+            numberline.innerHTML = `
+                <span class="bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-300">🐰 Inicio: <strong>${step.num1}</strong></span>
+                <span class="text-sky-600">${step.op === '+' ? '➔ +' : '➔ −'}${tensJump}</span>
+                <span class="bg-sky-100 px-2.5 py-1 rounded-lg border border-sky-300"><strong>${midVal}</strong></span>
+                <span class="text-sky-600">${step.op === '+' ? '➔ +' : '➔ −'}${unitsJump}</span>
+                <span class="bg-amber-100 text-amber-950 px-2.5 py-1 rounded-lg border border-amber-400">🏁 Meta: <strong>${ isOperationHintOnly ? '?' : step.ans }</strong></span>
+            `;
 
             if (step.op === '+') {
                 blocksArea.innerHTML = `
-                    <div class="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
-                        <span class="text-sm font-bold text-slate-600 mb-1">${step.num1} ${step.itemEmoji}</span>
+                    <div class="flex flex-col items-center bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-600 mb-1">${step.num1} ${step.itemEmoji}</span>
                         ${createBlocksHTML(step.num1, 0)}
                     </div>
-                    <div class="text-3xl font-bold text-emerald-600 bg-emerald-100 w-10 h-10 rounded-full flex items-center justify-center">+</div>
-                    <div class="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
-                        <span class="text-sm font-bold text-slate-600 mb-1">Agregamos ${step.num2} ${step.itemEmoji}</span>
+                    <div class="text-2xl font-bold text-emerald-600 bg-emerald-100 w-9 h-9 rounded-full flex items-center justify-center">+</div>
+                    <div class="flex flex-col items-center bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-600 mb-1">Sumamos ${step.num2} ${step.itemEmoji}</span>
                         ${createBlocksHTML(step.num2, 0)}
                     </div>
                 `;
             } else {
                 blocksArea.innerHTML = `
-                    <div class="flex flex-col items-center bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
-                        <span class="text-sm font-bold text-slate-600 mb-1">Empezamos con ${step.num1} ${step.itemEmoji} y tachamos ${step.num2}:</span>
+                    <div class="flex flex-col items-center bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-600 mb-1">Tenemos ${step.num1} ${step.itemEmoji} y tachamos ${step.num2}:</span>
                         ${createBlocksHTML(step.num1, step.num2)}
                     </div>
                 `;
@@ -1226,16 +1512,144 @@
         }
 
         /* ==========================================================================
-           ACTUALIZACIÓN DE LA INTERFAZ Y BARRA DE PROGRESO
+           MAPA DE 10 NIVELES Y TIENDA DE SOMBREROS DE LEO
            ========================================================================== */
+        function renderTopLevelStrip() {
+            const strip = document.getElementById('top-level-strip');
+            strip.innerHTML = '';
+
+            LEVELS.forEach((lvl, idx) => {
+                const isCurrent = idx === state.levelIdx;
+                const isDone = !!state.completedLevels[lvl.level];
+                const btn = document.createElement('button');
+                btn.type = 'button';
+
+                let colorClass = 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200';
+                if (isCurrent) {
+                    colorClass = 'bg-amber-400 text-slate-950 border-amber-600 scale-105 shadow-sm';
+                } else if (isDone) {
+                    colorClass = 'bg-emerald-500 text-white border-emerald-700';
+                }
+
+                btn.className = `flex-shrink-0 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm border-2 transition-all flex items-center gap-1 ${colorClass}`;
+                btn.innerHTML = `<span>${isDone ? '⭐' : '🕹️'}</span><span>Niv ${lvl.level}</span>`;
+                btn.onclick = () => selectLevel(idx);
+                strip.appendChild(btn);
+            });
+        }
+
+        function renderMapModal() {
+            const grid = document.getElementById('map-grid');
+            grid.innerHTML = '';
+
+            LEVELS.forEach((lvl, idx) => {
+                const isDone = !!state.completedLevels[lvl.level];
+                const isCurrent = idx === state.levelIdx;
+
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.onclick = () => selectLevel(idx);
+                card.className = `p-3.5 rounded-2xl border-2 text-left transition-all flex items-center justify-between gap-3 ${
+                    isCurrent 
+                        ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-300' 
+                        : isDone 
+                            ? 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100' 
+                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                }`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="text-xs font-bold uppercase text-slate-500">${lvl.categoryName}</div>
+                        <div class="text-base sm:text-lg font-bold text-slate-800">${lvl.title}</div>
+                    </div>
+                    <div class="text-2xl flex-shrink-0">${isDone ? '🏆' : isCurrent ? '▶️' : '🕹️'}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderShopModal() {
+            document.getElementById('shop-star-count').textContent = state.stars;
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+
+            HATS_SHOP.forEach(hat => {
+                const isEquipped = state.equippedHat === hat.emoji;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border-2 flex flex-col items-center text-center gap-1.5 ${
+                    isEquipped ? 'bg-amber-50 border-amber-400' : 'bg-slate-50 border-slate-200'
+                }`;
+
+                let actionBtnHTML = '';
+                if (isEquipped) {
+                    actionBtnHTML = `<span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-xl">Puesto ✓</span>`;
+                } else if (hat.owned) {
+                    actionBtnHTML = `<button onclick="equipHat('${hat.id}')" class="btn-3d btn-blue text-xs font-bold px-3 py-1.5 rounded-xl w-full">Usar</button>`;
+                } else {
+                    actionBtnHTML = `<button onclick="buyHat('${hat.id}')" class="btn-3d btn-amber text-xs font-bold px-3 py-1.5 rounded-xl w-full">Comprar ⭐ ${hat.price}</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="text-4xl my-1">${hat.emoji}</div>
+                    <div class="font-bold text-slate-800 text-sm">${hat.name}</div>
+                    ${actionBtnHTML}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buyHat(hatId) {
+            const hat = HATS_SHOP.find(h => h.id === hatId);
+            if (!hat) return;
+            if (state.stars >= hat.price) {
+                state.stars -= hat.price;
+                hat.owned = true;
+                state.equippedHat = hat.emoji;
+                document.getElementById('star-count').textContent = state.stars;
+                document.getElementById('bunny-hat').textContent = hat.emoji;
+                playSound('win');
+                fireConfetti(40);
+                renderShopModal();
+                loadCurrentStep();
+            } else {
+                playSound('hint');
+                setBunnySpeech(`¡Necesitas ${hat.price} estrellas para el accesorio ${hat.name}! Resuelve más niveles para ganarlas.`);
+            }
+        }
+
+        function equipHat(hatId) {
+            const hat = HATS_SHOP.find(h => h.id === hatId);
+            if (!hat || !hat.owned) return;
+            playSound('tap');
+            state.equippedHat = hat.emoji;
+            document.getElementById('bunny-hat').textContent = hat.emoji;
+            renderShopModal();
+            loadCurrentStep();
+        }
+
+        function openModal(id) {
+            playSound('tap');
+            if (id === 'map-modal') renderMapModal();
+            if (id === 'shop-modal') renderShopModal();
+            const m = document.getElementById(id);
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeModal(id) {
+            playSound('tap');
+            const m = document.getElementById(id);
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
         function updatePhaseVisibility() {
             const phases = {
-                'DETECTIVE': document.getElementById('phase-detective'),
+                'ARCADE': document.getElementById('phase-arcade'),
                 'OPERATION': document.getElementById('phase-operation'),
                 'CALCULATE': document.getElementById('phase-calculate'),
                 'NEXT': document.getElementById('phase-next')
             };
-
             Object.keys(phases).forEach(p => {
                 if (p === state.phase) {
                     phases[p].classList.remove('hidden');
@@ -1247,46 +1661,8 @@
             });
         }
 
-        function updateProgressBar() {
-            const totalMissions = MISSIONS_DB[state.category].length;
-            document.getElementById('mission-counter').textContent = `Misión ${state.missionIdx + 1} / ${totalMissions}`;
-
-            // Cada micro-paso llena la barra para dar sensación inmediata de avance
-            let subProgress = 0.2;
-            if (state.phase === 'OPERATION') subProgress = 0.45;
-            if (state.phase === 'CALCULATE') subProgress = 0.75;
-            if (state.phase === 'NEXT') subProgress = 1.0;
-
-            const missionProgress = ((state.missionIdx + subProgress) / totalMissions) * 100;
-            document.getElementById('progress-bar').style.width = `${Math.min(100, Math.max(12, missionProgress))}%`;
-        }
-
-        function renderMissionDots() {
-            const dotsContainer = document.getElementById('mission-dots');
-            dotsContainer.innerHTML = '';
-            const missions = MISSIONS_DB[state.category];
-
-            missions.forEach((m, idx) => {
-                const btn = document.createElement('button');
-                const isActive = idx === state.missionIdx;
-                btn.className = `w-7 h-7 rounded-lg font-bold text-xs transition-all ${
-                    isActive 
-                        ? 'bg-slate-800 text-white scale-110 shadow-sm' 
-                        : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                }`;
-                btn.textContent = idx + 1;
-                btn.onclick = () => {
-                    playGentleSound('tap');
-                    state.missionIdx = idx;
-                    state.stepIdx = 0;
-                    loadCurrentStep();
-                };
-                dotsContainer.appendChild(btn);
-            });
-        }
-
-        // Iniciar el juego al cargar la ventana
         window.onload = function () {
+            document.getElementById('star-count').textContent = state.stars;
             loadCurrentStep();
         };
     </script>
